@@ -25,35 +25,55 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 if ( !function_exists( 'add_action' ) ) {
-	echo "Hi there!  I'm just a plugin, not much I can do when called directly.";
+	echo __("Hi there!  I'm just a plugin, not much I can do when called directly.",'guardian_news');
 	exit;
 }
 
-global $gnews = &$guardian_news = new Guardian_news();
+define( 'GUARDIAN_NEWS_PATH', plugin_dir_path(__FILE__) );
+require_once ( GUARDIAN_NEWS_PATH . 'guardian_widget.php' );
 
-/**
- * The Guardian News class is mainly a namespace wrapper for all Guardian News functions.
+$guardian_news = new Guardian_News();
+
+/** mainly a namespace wrapper
  */
-class Guardian_news {
+class Guardian_News {
 	private $version;
 	private $table;
 
-	/**
-	 * set a few variables,
-	 * Tell WordPress about our hooks and filters
-	 *
-	 * TODO: Load our options.
-	 */
 	public function __construct() {
 		global $wpdb;
 		$this->version = "0.1";
 		$this->table = $wpdb->prefix . "guardian_news";
 
-		register_activation_hook(__FILE__, array(&$this, 'install'));
+		register_activation_hook(__FILE__, array(&$this, 'install') );
 
-		add_action('plugins_loaded', array(&$this, 'update_db_check'));
-		add_action('init', array(&$this, 'init'));
+		add_action('plugins_loaded', array(&$this, 'update_db_check') );
+		add_action('widgets_init', array(&$this, 'register_widgets') );
 
+	}
+
+	public function register_widgets() {
+		register_widget( 'Guardian_Widget' );
+	}
+
+
+	/** Perform the initial database setup for our plugin.
+	 * This function will run when the plugin is activated.
+	 */
+	public function install() {
+		//stub
+	}
+
+	/**
+	 * Check to see if our plugin version has changed from what the user has
+	 * installed, and if it has, re-install the MySQL table.
+	 *
+	 * This function will run after WordPress loads the plugins.
+	 */
+	public function update_db_check() {
+		if (get_option("guardian_news_version") != $this->version) {
+			$this->install();
+		}
 	}
 }
 ?>

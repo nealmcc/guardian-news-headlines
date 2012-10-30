@@ -4,7 +4,7 @@ Tags: Guardian, News, Headlines, News Headlines
 Requires at least: 3.0
 Tested up to: 3.4.2
 
-Displays a feed of Guardian news headlines into a widget.
+Display feeds of Guardian news headlines into customizable widgets.
 
 == Description ==
 
