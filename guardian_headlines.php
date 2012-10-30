@@ -1,11 +1,13 @@
 <?php
 /*
- * Plugin Name: Guardian News
- * Version: 0.1
+ * Plugin Name: Guardian News Headlines
+ * Contributors: NealMcConachie
+ * Version: 0.2
  * Description: Displays a feed of Guardian news headlines into a widget.
  * Author: Neal McConachie for Guardian News Media
  * Author URI: http://www.riveroak.co/
  * License: GPLv2 or later
+ * License URI: http://www.gnu.org/licenses/gpl-2.0.html
  */
 
 /*
@@ -25,55 +27,111 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 if ( !function_exists( 'add_action' ) ) {
-	echo __("Hi there!  I'm just a plugin, not much I can do when called directly.",'guardian_news');
+	echo __("Hi there!  I'm just a plugin, not much I can do when called directly.",'guardian_headlines');
 	exit;
 }
 
-define( 'GUARDIAN_NEWS_PATH', plugin_dir_path(__FILE__) );
-require_once ( GUARDIAN_NEWS_PATH . 'guardian_widget.php' );
+define( 'GUARDIAN_HEADLINES_PATH', plugin_dir_path(__FILE__) );
+require_once ( GUARDIAN_HEADLINES_PATH . 'guardian_widget.php' );
 
-$guardian_news = new Guardian_News();
+global $guardian_headlines;
+$guardian_headlines = new Guardian_Headlines();
 
-/** mainly a namespace wrapper
- */
-class Guardian_News {
-	private $version;
-	private $table;
+/** Namespace wrapper */
+class Guardian_Headlines {
+	private $version = '0.2';
 
 	public function __construct() {
-		global $wpdb;
-		$this->version = "0.1";
-		$this->table = $wpdb->prefix . "guardian_news";
-
 		register_activation_hook(__FILE__, array(&$this, 'install') );
+		register_deactivation_hook( __FILE__, array(&$this, 'uninstall') );
 
-		add_action('plugins_loaded', array(&$this, 'update_db_check') );
+		add_action('plugins_loaded', array(&$this, 'update_check') );
 		add_action('widgets_init', array(&$this, 'register_widgets') );
 
 	}
 
-	public function register_widgets() {
-		register_widget( 'Guardian_Widget' );
-	}
-
-
-	/** Perform the initial database setup for our plugin.
-	 * This function will run when the plugin is activated.
+	/** Initial database setup for our plugin.
+	 * Runs when the plugin is activated or updated to a newer version.
 	 */
 	public function install() {
-		//stub
+		$section_list = json_decode(file_get_contents( GUARDIAN_HEADLINES_PATH . 'headlines_config.json'));
+
+		update_option("guardian_headlines_version", $this->version);
+		update_option('guardian_headlines_sections', $section_list);
+
+	}
+
+	/** Clean up behind ourselves.
+	 * Runs on plugin deactivation.
+	 */
+	public function uninstall() {
+		delete_option('guardian_headlines_version');
+		delete_option('guardian_headlines_sections');
 	}
 
 	/**
 	 * Check to see if our plugin version has changed from what the user has
-	 * installed, and if it has, re-install the MySQL table.
+	 * installed, and if it has, re-install our list of news sections.
 	 *
-	 * This function will run after WordPress loads the plugins.
+	 * This function will run after WordPress loads all plugins.
 	 */
-	public function update_db_check() {
-		if (get_option("guardian_news_version") != $this->version) {
+	public function update_check() {
+		if (get_option("guardian_headlines_version") != $this->version) {
 			$this->install();
 		}
 	}
+
+	/** Inform Wordpress of our widget */
+	public function register_widgets() {
+		register_widget( 'Guardian_Widget' );
+	}
+
+	/** Build a query for the Guardian content API
+	 * Base our query on the given widget options.
+	 * Assumes that the widget options have already been validated.
+	 * @see Guardian_Widget::update() for valid widget options
+	 */
+	public function build_query($widget_options) {
+		$query = array (
+			'format'	=> 'json',
+			'show-fields'	=> 'thumbnail,standfirst,headline',
+			'order-by'	=> 'newest',
+			);
+
+		if ( $widget_options['type'] == 'simple' ) {
+			$base = $widget_options['section'] . '?';
+			if ( $widget_options['order'] != 'latest' ) {
+				$query['show-most-viewed'] = 'true';
+			}
+		} else { // advanced query
+			$base = 'search?';
+			$query['q'] = $widget_options['search'];
+			if ( $widget_options['order'] != 'latest' ) {
+				$query['order-by'] = 'relevance';
+			}
+		}
+
+		$query['pageSize'] = $widget_options['quantity'];
+
+		$built_query = http_build_query($query, null, '&');
+
+		return $base . $built_query;
+	}
+
+	/** headlines gets the latest feed from The Guardian, for the given query arguments.
+	 * Assumes the query is valid for The Guardian content API
+	 * (see http://explorer.content.guardianapis.com/)
+	 * If an up-to-date cached version of this query is available, we'll use that first. (TODO)
+	 *
+	 * @param string $query the string to submit to the Guardian content API
+	 */
+	public function headlines($query) {
+		$url = 'http://content.guardianapis.com/';
+
+		$result = json_decode(file_get_contents($url . $query));
+
+		return $result;
+	}
+
 }
 ?>
