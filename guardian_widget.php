@@ -23,7 +23,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-require_once(ABSPATH . WPINC . '/widgets.php');
+require_once (ABSPATH . WPINC . '/widgets.php');
 
 /** Guardian_Widget is the base widget for each list of news headlines.
  *
@@ -34,7 +34,7 @@ class Guardian_Widget extends WP_Widget {
 	private $default_config = array(
 			'title' 	=> 'Latest from The Guardian',
 			'type'		=> 'simple',
-			'section' 	=> 'index',			// All
+			'section' 	=> 'education',
 			'order' 	=> 'latest',
 			'quantity'	=> 5
 			);
@@ -67,6 +67,8 @@ class Guardian_Widget extends WP_Widget {
 		global $guardian_headlines;
 		$query = $guardian_headlines->build_query($instance);
 		$headlines = $guardian_headlines->headlines($query);
+
+//		for ($headlines as $headline : )
 
 		var_dump($headlines);
 
