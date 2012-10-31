@@ -119,7 +119,7 @@ class Guardian_Widget extends WP_Widget {
 	 */
 	public function form($instance) {
 
-		$instance = wp_parse_args( (array)$instance, $this->defaults );
+		$instance = wp_parse_args( (array)$instance, $this->default_config );
 
 		$field_id = $this->get_field_id('title');
 		$field_name = $this->get_field_name('title');
