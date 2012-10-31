@@ -1,5 +1,5 @@
 === Guardian News ===
-Contributors: nealmcc
+Contributors: NealMcConachie
 Tags: Guardian, News, Headlines, News Headlines
 Requires at least: 3.0
 Tested up to: 3.4.2

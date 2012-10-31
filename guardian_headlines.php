@@ -1,7 +1,6 @@
 <?php
 /*
  * Plugin Name: Guardian News Headlines
- * Contributors: NealMcConachie
  * Version: 0.2
  * Description: Displays a feed of Guardian news headlines into a widget. Each headline links to the live news article.
  * Author: Neal McConachie for Guardian News Media
@@ -34,7 +33,6 @@ if ( !function_exists( 'add_action' ) ) {
 define( 'GUARDIAN_HEADLINES_PATH', plugin_dir_path(__FILE__) );
 require_once ( GUARDIAN_HEADLINES_PATH . 'guardian_widget.php' );
 
-global $guardian_headlines;
 $guardian_headlines = new Guardian_Headlines();
 
 /** Namespace wrapper */
@@ -73,7 +71,7 @@ class Guardian_Headlines {
 	 * Check to see if our plugin version has changed from what the user has
 	 * installed, and if it has, re-install our list of news sections.
 	 *
-	 * This function will run after WordPress loads all plugins.
+	 * This function will run every time after WordPress loads all plugins.
 	 */
 	public function update_check() {
 		if (get_option("guardian_headlines_version") != $this->version) {
@@ -84,53 +82,6 @@ class Guardian_Headlines {
 	/** Inform Wordpress of our widget */
 	public function register_widgets() {
 		register_widget( 'Guardian_Widget' );
-	}
-
-	/** Build a query for the Guardian content API
-	 * Base our query on the given widget options.
-	 * Assumes that the widget options have already been validated.
-	 * @see Guardian_Widget::update() for valid widget options
-	 */
-	public function build_query($widget_options) {
-		$query = array (
-			'format'	=> 'json',
-			'show-fields'	=> 'thumbnail,standfirst,headline',
-			'order-by'	=> 'newest',
-			);
-
-		if ( $widget_options['type'] == 'simple' ) {
-			$base = $widget_options['section'] . '?';
-			if ( $widget_options['order'] != 'latest' ) {
-				$query['show-most-viewed'] = 'true';
-			}
-		} else { // advanced query
-			$base = 'search?';
-			$query['q'] = $widget_options['search'];
-			if ( $widget_options['order'] != 'latest' ) {
-				$query['order-by'] = 'relevance';
-			}
-		}
-
-		$query['pageSize'] = $widget_options['quantity'];
-
-		$built_query = http_build_query($query, null, '&');
-
-		return $base . $built_query;
-	}
-
-	/** headlines gets the latest feed from The Guardian, for the given query arguments.
-	 * Assumes the query is valid for The Guardian content API
-	 * (see http://explorer.content.guardianapis.com/)
-	 * If an up-to-date cached version of this query is available, we'll use that first. (TODO)
-	 *
-	 * @param string $query the string to submit to the Guardian content API
-	 */
-	public function headlines($query) {
-		$url = 'http://content.guardianapis.com/';
-
-		$result = json_decode(file_get_contents($url . $query));
-
-		return $result;
 	}
 
 }

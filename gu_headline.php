@@ -36,11 +36,12 @@ class Gu_Headline {
 	 * @param url 		- string, URL to the article itself
 	 */
 	function __construct ($headline, $teaser, $thumbnail, $url) {
+		$allowed_html = array('a','p','em','strong','b','i');
 
-		$this->headline = wp_kses($headline);
-		$this->teaser = wp_kses($teaser);
-		$this->thumbnail = wp_kses($thumbnail);
-		$this->url = wp_kses($url);
+		$this->headline = wp_kses($headline, $allowed_html);
+		$this->teaser = wp_kses($teaser, $allowed_html);
+		$this->thumbnail = wp_kses($thumbnail, $allowed_html);
+		$this->url = wp_kses($url, $allowed_html);
 	}
 
 	/** Display this headline to stdout.
@@ -50,9 +51,9 @@ class Gu_Headline {
 		ob_start();
 		?>
 
-		<img alt="" src="<?php echo $thumbnail; ?>" />
-		<h3><a href="<?php echo $url; ?>"><?php echo $headline; ?></a></h3>
-		<p><?php echo $teaser; ?></p>
+		<h3><a href="<?php echo $this->url; ?>"><?php echo $this->headline; ?></a></h3>
+		<img alt="" src="<?php echo $this->thumbnail; ?>" />
+		<p><?php echo $this->teaser; ?></p>
 
 		<?php
 		ob_end_flush();

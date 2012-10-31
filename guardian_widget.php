@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 require_once (ABSPATH . WPINC . '/widgets.php');
+require_once (GUARDIAN_HEADLINES_PATH . 'gu_headline.php');
 
 /** Guardian_Widget is the base widget for each list of news headlines.
  *
@@ -34,9 +35,10 @@ class Guardian_Widget extends WP_Widget {
 	private $default_config = array(
 			'title' 	=> 'Latest from The Guardian',
 			'type'		=> 'simple',
-			'section' 	=> 'education',
-			'order' 	=> 'latest',
-			'quantity'	=> 5
+			'section' 	=> 'news',
+			'search'	=> '',
+			'quantity'	=> 5,
+			'order' 	=> 'latest'
 			);
 
 	public function __construct() {
@@ -64,13 +66,11 @@ class Guardian_Widget extends WP_Widget {
 			echo $before_title . $title . $after_title;
 		}
 
-		global $guardian_headlines;
-		$query = $guardian_headlines->build_query($instance);
-		$headlines = $guardian_headlines->headlines($query);
+		$headlines = $this->get_headlines($instance);
 
-//		for ($headlines as $headline : )
-
-		var_dump($headlines);
+		foreach ( $headlines as &$headline ) {
+			$headline->display();
+		}
 
 		echo $after_widget;
 	}
@@ -85,7 +85,7 @@ class Guardian_Widget extends WP_Widget {
 	 * @param array $old_instance Previously saved values from database.
 	 *
 	 * widget options:
-	 * 'title'	=> a string, displayed above the widget
+	 * 'title'	=> any string, displayed above the widget
 	 * 'type'	=> either 'simple' or 'advanced'
 	 * 'section'	=> only meaningful for a 'simple' widget, and must be the id of one of of the news sections defined in headlines_config.json
 	 * 'search'	=> only meaningful for an 'advanced' widget, and then will be passed directly to the guardian search API.
@@ -103,10 +103,7 @@ class Guardian_Widget extends WP_Widget {
 	 * If "false" is returned, the instance won't be saved/updated.
 	 */
 	public function update($new_instance, $old_instance) {
-		//TODO
-		//$instance = wp_parse_args( (array) $new_instance, $this->default_config );
-
-		$instance = $default_config;
+		$instance = wp_parse_args( (array) $new_instance, $this->default_config );
 
 		return $instance;
 	}
@@ -119,15 +116,124 @@ class Guardian_Widget extends WP_Widget {
 	 */
 	public function form($instance) {
 
-		$instance = wp_parse_args( (array)$instance, $this->default_config );
+		$instance = wp_parse_args( (array) $instance, $this->default_config );
 
-		$field_id = $this->get_field_id('title');
-		$field_name = $this->get_field_name('title');
-		echo "\r\n".'<p><label for="'.$field_id.'">'.__('Title', 'guardian_news').': <input type="text" class="widefat" id="'.$field_id.'" name="'.$field_name.'" value="'.attribute_escape( $instance['title'] ).'" /><label></p>';
+		$field = 'title';
+		$field_id = $this->get_field_id($field);
+		$field_name = $this->get_field_name($field);
+		echo "\r\n".'<p><label for="'.$field_id.'">'.__('Title', 'guardian_news').': <input type="text" class="widefat" id="'.$field_id.'" name="'.$field_name.'" value="'.attribute_escape( $instance[$field] ).'" /><label></p>';
 
-		$field_id = $this->get_field_id('section');
-		$field_name = $this->get_field_name('section');
-		echo "\r\n".'<p><label for="'.$field_id.'">'.__('Category', 'guardian_news').': <input type="text" class="widefat" id="'.$field_id.'" name="'.$field_name.'" value="'.attribute_escape( $instance['section'] ).'" /><label></p>';
+		$field = 'type';
+		$field_id = $this->get_field_id($field);
+		$field_name = $this->get_field_name($field);
+		echo "\r\n".'<p><label for="'.$field_id.'">'.__('Feed Type', 'guardian_news').': <input type="text" class="widefat" id="'.$field_id.'" name="'.$field_name.'" value="'.attribute_escape( $instance[$field] ).'" /><label></p>';
+
+		$field = 'section';
+		$field_id = $this->get_field_id($field);
+		$field_name = $this->get_field_name($field);
+		echo "\r\n".'<p><label for="'.$field_id.'">'.__('Category', 'guardian_news').': <input type="text" class="widefat" id="'.$field_id.'" name="'.$field_name.'" value="'.attribute_escape( $instance[$field] ).'" /><label></p>';
+
+		$field = 'search';
+		$field_id = $this->get_field_id($search);
+		$field_name = $this->get_field_name($field);
+		echo "\r\n".'<p><label for="'.$field_id.'">'.__('Search', 'guardian_news').': <input type="text" class="widefat" id="'.$field_id.'" name="'.$field_name.'" value="'.attribute_escape( $instance[$field] ).'" /><label></p>';
+
+		$field = 'quantity';
+		$field_id = $this->get_field_id($search);
+		$field_name = $this->get_field_name($field);
+		echo "\r\n".'<p><label for="'.$field_id.'">'.__('Quantity', 'guardian_news').': <input type="text" class="widefat" id="'.$field_id.'" name="'.$field_name.'" value="'.attribute_escape( $instance[$field] ).'" /><label></p>';
+
+		$field = 'order';
+		$field_id = $this->get_field_id($search);
+		$field_name = $this->get_field_name($field);
+		echo "\r\n".'<p><label for="'.$field_id.'">'.__('Order', 'guardian_news').': <input type="text" class="widefat" id="'.$field_id.'" name="'.$field_name.'" value="'.attribute_escape( $instance[$field] ).'" /><label></p>';
+
+	}
+
+
+	/** Get the latest feed from The Guardian, for the given widget options.
+	 *
+	 * If an up-to-date cached version of this query is available, we'll use that first. (TODO)
+	 *
+	 * @param string $query the string to submit to the Guardian content API
+	 * @returns a (possibly empty) array of Gu_Headline objects
+	 */
+	private function get_headlines($widget_options) {
+
+		$url = 'http://content.guardianapis.com/';
+		$query = $this->build_query($widget_options);
+		$feed = json_decode(file_get_contents($url . $query));
+
+		$headlines = array();
+		if ( empty($feed) || ($feed->response->status != 'ok' ) ) {
+			return array();
+		}
+
+		// our data will be in a different part of the feed if we're asking for the most viewed articles.
+		if ( $widget_options['order'] == 'most-viewed' ) {
+			$quantity = $widget_options['quantity']; // most viewed always returns 10 results for a single news section
+			$data = $feed->response->mostViewed;
+		} else {
+			$quantity = ( $feed->response->total < $widget_options['quantity'] ) ? $feed->response->total : $widget_options['quantity'];
+			$data = $feed->response->results;
+		}
+
+		$headlines = $this->extract_headlines ($data, $quantity);
+
+		return $headlines;
+	}
+
+	/** given an array of Guardian feed data, create an array of Gu_Headline objects
+	 *
+	 * The provided $data array must have at least $quantity elements. (TODO - check this.)
+	 * We specify a quantity, rather than just taking everything from the array, because of how the mostViewed results
+	 * come back from the Guardian Content API.  (When asking for most viewed for a given section, we always get 10 results)
+	 */
+	private function extract_headlines ($data, $quantity) {
+		$headlines = array();
+
+		for ($i = 0; $i < $quantity; $i++ ) {
+			$headlines[] = new gu_headline(
+									$data[$i]->fields->headline,
+									$data[$i]->fields->standfirst,
+									$data[$i]->fields->thumbnail,
+									$data[$i]->webUrl
+									);
+		}
+
+		return $headlines;
+	}
+
+	/** Build a query for the Guardian content API
+	 * (see http://explorer.content.guardianapis.com/)
+	 * Base our query on the given widget options.
+	 * Assumes that the widget options have already been validated.
+	 * @see Guardian_Widget::update() for valid widget options
+	 */
+	private function build_query($widget_options) {
+		$query = array (
+			'format'      => 'json',
+			'show-fields' => 'thumbnail,standfirst,headline',
+			'order-by'    => 'newest',
+			'pageSize'    => $widget_options['quantity']
+			);
+
+		if ( $widget_options['type'] == 'simple' ) {
+			$base = $widget_options['section'] . '?';
+			if ( $widget_options['order'] != 'latest' ) {
+				$query['show-most-viewed'] = 'true';
+			}
+		} else { // advanced query - we're searching for a term
+			$base = 'search?';
+			$query['q'] = $widget_options['search'];
+			if ( $widget_options['order'] != 'latest' ) {
+				$query['order-by'] = 'relevance';
+			}
+		}
+
+		$built_query = http_build_query($query, null, '&');
+
+		return $base . $built_query;
 	}
 
 
