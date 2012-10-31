@@ -3,7 +3,7 @@
  * Plugin Name: Guardian News Headlines
  * Contributors: NealMcConachie
  * Version: 0.2
- * Description: Displays a feed of Guardian news headlines into a widget.
+ * Description: Displays a feed of Guardian news headlines into a widget. Each headline links to the live news article.
  * Author: Neal McConachie for Guardian News Media
  * Author URI: http://www.riveroak.co/
  * License: GPLv2 or later

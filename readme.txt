@@ -8,7 +8,7 @@ Display feeds of Guardian news headlines into customizable widgets.
 
 == Description ==
 
-Add current events headlines from the category of your choice into any widgetised area of your Wordpress site.
+Add current events headlines from the category of your choice into any widgetised area of your Wordpress site.  Each headline links to the live article on The Guardian.
 
 Display Options:
 	- Selectable news categories
