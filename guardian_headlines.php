@@ -37,7 +37,7 @@ $guardian_headlines = new Guardian_Headlines();
 
 /** Namespace wrapper */
 class Guardian_Headlines {
-	private $version = '0.2';
+	private $version = '0.3';
 
 	public function __construct() {
 		register_activation_hook(__FILE__, array(&$this, 'install') );
