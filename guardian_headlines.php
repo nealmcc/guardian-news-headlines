@@ -45,6 +45,7 @@ class Guardian_Headlines {
 
 		add_action('plugins_loaded', array(&$this, 'update_check') );
 		add_action('widgets_init', array(&$this, 'register_widgets') );
+		add_action('wp_enqueue_scripts', array(&$this, 'enqueue_scripts') );
 
 	}
 
@@ -82,6 +83,12 @@ class Guardian_Headlines {
 	/** Inform Wordpress of our widget */
 	public function register_widgets() {
 		register_widget( 'Guardian_Widget' );
+	}
+
+	/** Enqueue our scripts and styles */
+	public function enqueue_scripts() {
+		wp_register_style('guardian_headlines_style', plugins_url('guardian_headlines.css', __FILE__), $deps = false, $this->version );
+		wp_enqueue_style('guardian_headlines_style');
 	}
 
 }

@@ -69,7 +69,9 @@ class Guardian_Widget extends WP_Widget {
 		$headlines = $this->get_headlines($instance);
 
 		foreach ( $headlines as &$headline ) {
+			echo '<div class="gu_headline">';
 			$headline->display();
+			echo '</div>';
 		}
 
 		echo $after_widget;

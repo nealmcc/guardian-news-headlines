@@ -1,0 +1,41 @@
+.widget_guardian_widget .gu_headline {
+	clear: both;
+	margin: 0;
+	padding: 0.5em 0 1em 0;
+	border-top: 1px dotted #2E2C42
+}
+.widget_guardian_widget .gu_headline:last-child {
+	border-bottom: 1px dotted #2E2C42
+}
+.widget_guardian_widget .gu_headline:after {
+    content: "";
+    display: table;
+    clear: both
+}
+
+.widget_guardian_widget .gu_headline img {
+	float: left;
+	max-width: 25%;
+	margin: 0;
+	padding: 0;
+	border: none;
+}
+
+.widget_guardian_widget .gu_headline h3 {
+	float: right;
+	width: 70%;
+	margin: -2px 0 0 0;
+	padding: 0;
+	line-height: 1.3em;
+}
+
+.widget_guardian_widget .gu_headline h3 a {
+	margin: 0;
+	padding: 0;
+}
+
+.widget_guardian_widget .gu_headline p {
+	clear: both;
+	margin: 0;
+	padding: 0;
+}
