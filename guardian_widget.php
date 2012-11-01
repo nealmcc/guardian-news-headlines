@@ -102,10 +102,60 @@ class Guardian_Widget extends WP_Widget {
 	 * @return array Updated safe values to be saved.
 	 * If "false" is returned, the instance won't be saved/updated.
 	 */
-	public function update($new_instance, $old_instance) {
-		$instance = wp_parse_args( (array) $new_instance, $this->default_config );
+	public function update($new, $old) {
+		$new = wp_parse_args( (array) $new, $this->default_config );
 
-		return $instance;
+		$save['title'] = sanitize_text_field($new['title']);
+
+		$field = 'type';
+		$allowed = array('category', 'search');
+		$save[$field] = ( in_array($new[$field], $allowed) ) ? $new[$field] : $old[$field];
+
+		if ( $save['type'] == 'category' ) {
+
+			$save['search'] = '';
+
+			$field = 'section';
+			$allowed = array();
+			$sections = get_option('guardian_headlines_sections');
+			foreach ($sections as $section) {
+				$allowed[] = $section->id;
+			}
+
+			$save[$field] = ( in_array($new[$field], $allowed) ) ? $new[$field] : $this->default_config[$field];
+
+			if ( $save['section'] == 'index' ) { //the index section only has data for most-viewed, not latest.
+				$save['order'] = 'most-viewed';
+			} else {
+				$field = 'order';
+				$allowed = array('latest','most-viewed');
+				$save[$field] = ( in_array($new[$field], $allowed) ) ? $new[$field] : 'latest';
+			}
+
+		} else { // type = search
+
+			$save['section'] = '';
+
+			$field = 'search';
+			$save[$field] = sanitize_text_field($new[$field]);
+			if ( empty($save[$field]) )
+				$save[$field] = 'news';
+
+			$field = 'order';
+			$allowed = array('latest','relevance');
+			$save[$field] = ( in_array($new[$field], $allowed) ) ? $new[$field] : 'latest';
+		}
+
+		$field = 'quantity';
+		if ( intval($new[$field]) < 1 ) {
+			$save[$field] = 1;
+		} else if ( intval($new[$field]) > 10 ) {
+			$save[$field] = 10;
+		} else {
+			$save[$field] = intval($new[$field]);
+		}
+
+		return $save;
 	}
 
 	/** Echo the settings update form
@@ -131,7 +181,7 @@ class Guardian_Widget extends WP_Widget {
 		$field = 'section';
 		$field_id = $this->get_field_id($field);
 		$field_name = $this->get_field_name($field);
-		echo "\r\n".'<p><label for="'.$field_id.'">'.__('Category', 'guardian_news').': <input type="text" class="widefat" id="'.$field_id.'" name="'.$field_name.'" value="'.attribute_escape( $instance[$field] ).'" /><label></p>';
+		echo "\r\n".'<p><label for="'.$field_id.'">'.__('Section', 'guardian_news').': <input type="text" class="widefat" id="'.$field_id.'" name="'.$field_name.'" value="'.attribute_escape( $instance[$field] ).'" /><label></p>';
 
 		$field = 'search';
 		$field_id = $this->get_field_id($search);
