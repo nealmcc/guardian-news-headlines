@@ -47,13 +47,16 @@ class Gu_Headline {
 	/** Display this headline to stdout.
 	 * Does not address style issues.
 	 */
-	public function display() {
+	public function display($show_teaser = false) {
 		ob_start();
 		?>
 
 		<h3><a href="<?php echo $this->url; ?>"><?php echo $this->headline; ?></a></h3>
-		<img alt="" src="<?php echo $this->thumbnail; ?>" />
-		<p><?php echo $this->teaser; ?></p>
+		<p><img alt="" src="<?php echo $this->thumbnail; ?>" />
+		<?php if ($show_teaser) : ?>
+			<?php echo $this->teaser; ?>
+		<?php endif; ?>
+		</p>
 
 		<?php
 		ob_end_flush();
