@@ -10,6 +10,7 @@
     {"id": "culture",              "webTitle": "Culture"},
     {"id": "education",            "webTitle": "Education"},
     {"id": "environment",          "webTitle": "Environment"},
+    {"id": "fashion",              "webTitle": "Fashion"}.
     {"id": "film",                 "webTitle": "Film"},
     {"id": "football",             "webTitle": "Football"},
     {"id": "global-development",   "webTitle": "Global development"},
