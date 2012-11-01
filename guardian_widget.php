@@ -34,9 +34,9 @@ class Guardian_Widget extends WP_Widget {
 
 	private $default_config = array(
 			'title' 	=> 'Latest from The Guardian',
-			'type'		=> 'simple',
+			'type'		=> 'category',
 			'section' 	=> 'news',
-			'search'	=> '',
+			'search'	=> '',							// only relevant for 'search' type widgets
 			'quantity'	=> 5,
 			'order' 	=> 'latest'
 			);
@@ -86,17 +86,17 @@ class Guardian_Widget extends WP_Widget {
 	 *
 	 * widget options:
 	 * 'title'	=> any string, displayed above the widget
-	 * 'type'	=> either 'simple' or 'advanced'
-	 * 'section'	=> only meaningful for a 'simple' widget, and must be the id of one of of the news sections defined in headlines_config.json
-	 * 'search'	=> only meaningful for an 'advanced' widget, and then will be passed directly to the guardian search API.
+	 * 'type'	=> either 'category' or 'search'
+	 * 'section'	=> only meaningful for a 'category' widget, and must be the id of one of of the news sections defined in headlines_config.json
+	 * 'search'	=> only meaningful for an 'search' widget, and then will be passed directly to the guardian search API.
 	 *		   searches can contain the following special characters:
 	 * 			,	means AND
 	 *			|	means OR
 	 *			-	means NOT
-	 * 'order'	=> can be 'latest' or 'most-viewed' for simple queries
-	 *		   can be 'latest' or 'most-relevant' for advanced queries
-	 *		   NOTE: a special restriction exists for a simple query for the "index" section.  In this case,
-	 *			 only a 'most-viewed' query will return any results.
+	 * 'order'	=> can be 'latest' or 'most-viewed' for category queries
+	 *		   can be 'latest' or 'most-relevant' for search queries
+	 *		   NOTE: a special restriction exists for a category query for the "index" section.  In this case,
+	 *			 only a 'most-viewed' query will return any results, 'latest' will return nothing useful.
 	 * 'quantity'	=> can be between 1 and 10
 	 *
 	 * @return array Updated safe values to be saved.
@@ -218,7 +218,7 @@ class Guardian_Widget extends WP_Widget {
 			'pageSize'    => $widget_options['quantity']
 			);
 
-		if ( $widget_options['type'] == 'simple' ) {
+		if ( $widget_options['type'] == 'category' ) {
 			$base = $widget_options['section'] . '?';
 			if ( $widget_options['order'] != 'latest' ) {
 				$query['show-most-viewed'] = 'true';
