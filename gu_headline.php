@@ -53,9 +53,7 @@ class Gu_Headline {
 
 		<h3><a href="<?php echo $this->url; ?>"><?php echo $this->headline; ?></a></h3>
 		<p><img alt="" src="<?php echo $this->thumbnail; ?>" />
-		<?php if ($show_teaser) : ?>
-			<?php echo $this->teaser; ?>
-		<?php endif; ?>
+		<?php if ($show_teaser) { echo $this->teaser; }?>
 		</p>
 
 		<?php

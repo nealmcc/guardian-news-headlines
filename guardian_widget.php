@@ -244,11 +244,11 @@ class Guardian_Widget extends WP_Widget {
 
 		for ($i = 0; $i < $quantity; $i++ ) {
 			$headlines[] = new gu_headline(
-									$data[$i]->fields->headline,
-									$data[$i]->fields->standfirst,
-									$data[$i]->fields->thumbnail,
-									$data[$i]->webUrl
-									);
+							$data[$i]->fields->headline,
+							$data[$i]->fields->standfirst,
+							$data[$i]->fields->thumbnail,
+							$data[$i]->webUrl
+							);
 		}
 
 		return $headlines;
