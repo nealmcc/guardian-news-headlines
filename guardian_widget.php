@@ -33,17 +33,17 @@ require_once (GUARDIAN_HEADLINES_PATH . 'gu_headline.php');
 class Guardian_Widget extends WP_Widget {
 
 	private $default_config = array(
-			'title' 	=> 'Latest from The Guardian',
-			'type'		=> 'category',
-			'section' 	=> 'news',
-			'search'	=> '',							// only relevant for 'search' type widgets
-			'quantity'	=> 5,
-			'order' 	=> 'latest'
+			'title'     => 'Latest from The Guardian',
+			'type'      => 'category',
+			'section'   => 'news',
+			'search'    => '',                          // only relevant for 'search' type widgets
+			'quantity'  => 5,
+			'order'     => 'latest'
 			);
 
 	public function __construct() {
 		parent::__construct(
-	 		'guardian_widget', // Base ID
+			'guardian_widget', // Base ID
 			'The Guardian Headlines', // Name
 			array( 'description' => __( 'Displays news headlines from The Guardian', 'guardian_news' ), ) // Args
 		);
@@ -87,19 +87,19 @@ class Guardian_Widget extends WP_Widget {
 	 * @param array $old_instance Previously saved values from database.
 	 *
 	 * widget options:
-	 * 'title'	=> any string, displayed above the widget
-	 * 'type'	=> either 'category' or 'search'
-	 * 'section'	=> only meaningful for a 'category' widget, and must be the id of one of of the news sections defined in headlines_config.json
-	 * 'search'	=> only meaningful for an 'search' widget, and then will be passed directly to the guardian search API.
-	 *		   searches can contain the following special characters:
-	 * 			,	means AND
-	 *			|	means OR
-	 *			-	means NOT
-	 * 'order'	=> can be 'latest' or 'most-viewed' for category queries
-	 *		   can be 'latest' or 'most-relevant' for search queries
-	 *		   NOTE: a special restriction exists for a category query for the "index" section.  In this case,
-	 *			 only a 'most-viewed' query will return any results, 'latest' will return nothing useful.
-	 * 'quantity'	=> can be between 1 and 10
+	 * 'title'  => any string, displayed above the widget
+	 * 'type'   => either 'category' or 'search'
+	 * 'section'    => only meaningful for a 'category' widget, and must be the id of one of of the news sections defined in headlines_config.json
+	 * 'search' => only meaningful for an 'search' widget, and then will be passed directly to the guardian search API.
+	 *         searches can contain the following special characters:
+	 *          ,   means AND
+	 *          |   means OR
+	 *          -   means NOT
+	 * 'order'  => can be 'latest' or 'most-viewed' for category queries
+	 *         can be 'latest' or 'most-relevant' for search queries
+	 *         NOTE: a special restriction exists for a category query for the "index" section.  In this case,
+	 *           only a 'most-viewed' query will return any results, 'latest' will return nothing useful.
+	 * 'quantity'   => can be between 1 and 10
 	 *
 	 * @return array Updated safe values to be saved.
 	 * If "false" is returned, the instance won't be saved/updated.
@@ -171,34 +171,85 @@ class Guardian_Widget extends WP_Widget {
 		$instance = wp_parse_args( (array) $instance, $this->default_config );
 
 		$field = 'title';
+		$label = __('Widget Title:', 'guardian_news');
 		$field_id = $this->get_field_id($field);
 		$field_name = $this->get_field_name($field);
-		echo "\r\n".'<p><label for="'.$field_id.'">'.__('Title', 'guardian_news').': <input type="text" class="widefat" id="'.$field_id.'" name="'.$field_name.'" value="'.attribute_escape( $instance[$field] ).'" /><label></p>';
+		$value = esc_attr($instance[$field]);
+		echo "<p>" .
+				"<label for='{$field_id}'>{$label}</label>" .
+				"<input id='{$field_id}' type='text' class='widefat' name='{$field_name}' value='{$value}' />" .
+			"</p>";
 
 		$field = 'type';
+		$label = __('Type of Feed:', 'guardian_news');
+		$options = array (
+			'category'  => __('Category', 'guardian_news'),
+			'search'    => __('Search',   'guardian_news')
+			);
 		$field_id = $this->get_field_id($field);
 		$field_name = $this->get_field_name($field);
-		echo "\r\n".'<p><label for="'.$field_id.'">'.__('Feed Type', 'guardian_news').': <input type="text" class="widefat" id="'.$field_id.'" name="'.$field_name.'" value="'.attribute_escape( $instance[$field] ).'" /><label></p>';
+		echo "<p>{$label}<br />";
+		foreach ($options as $value => $description) {
+			$checked = ( $instance[$field] == $value ) ? 'checked="true" ' : '';
+			echo "<input id='{$field_id}_{$value}' type='radio' name='{$field_name}' value='{$value}' {$checked}/>" .
+				 "<label for='{$field_id}_{$value}'> {$description}</label><br />";
+		}
+		echo '</p>';
 
 		$field = 'section';
+		$label = __('Category:', 'guardian_news');
+		$options = get_option('guardian_headlines_sections');
 		$field_id = $this->get_field_id($field);
 		$field_name = $this->get_field_name($field);
-		echo "\r\n".'<p><label for="'.$field_id.'">'.__('Section', 'guardian_news').': <input type="text" class="widefat" id="'.$field_id.'" name="'.$field_name.'" value="'.attribute_escape( $instance[$field] ).'" /><label></p>';
+		$value = esc_attr($instance[$field]);
+		echo "<p><label for='{$field_id}'>{$label}</label>" .
+				"<select id='{$field_id}' class='widefat' name='{$field_name}' size='1'>";
+				foreach ($options as $section) {
+					$selected = ( $instance[$field] == $section->id ) ? "selected='selected'" : '';
+					echo "<option value='{$section->id}' {$selected}>{$section->webTitle}</option>";
+				}
+		echo	"</select>" .
+			 '</p>';
 
 		$field = 'search';
-		$field_id = $this->get_field_id($search);
+		$label = __('Search Term:', 'guardian_news');
+		$field_id = $this->get_field_id($field);
 		$field_name = $this->get_field_name($field);
-		echo "\r\n".'<p><label for="'.$field_id.'">'.__('Search', 'guardian_news').': <input type="text" class="widefat" id="'.$field_id.'" name="'.$field_name.'" value="'.attribute_escape( $instance[$field] ).'" /><label></p>';
+		$value = esc_attr($instance[$field]);
+		echo '<p>' .
+				"<label for='{$field_id}'>{$label}" .
+				"<input id='{$field_id}' type='text' class='widefat' name='{$field_name}' value='{$value}' />" .
+				'<label>' .
+			 '</p>';
 
 		$field = 'quantity';
-		$field_id = $this->get_field_id($search);
+		$label = __('Quantity (between 1 and 10):', 'guardian_news'); //Max API quantity is 10 for most-viewed in a section. 50 for other queries.
+		$field_id = $this->get_field_id($field);
 		$field_name = $this->get_field_name($field);
-		echo "\r\n".'<p><label for="'.$field_id.'">'.__('Quantity', 'guardian_news').': <input type="text" class="widefat" id="'.$field_id.'" name="'.$field_name.'" value="'.attribute_escape( $instance[$field] ).'" /><label></p>';
+		$value = esc_attr($instance[$field]);
+		echo '<p>' .
+				"<label for='{$field_id}'> {$label}" .
+				"<input id='{$field_id}' type='number' min='1' max='10' class='widefat' name='{$field_name}' value='{$value}' />" .
+				'</label>' .
+			 '</p>';
 
 		$field = 'order';
-		$field_id = $this->get_field_id($search);
+		$label = __('Order Headlines by:', 'guardian_news');
+		$options = array (
+			'latest'        => __('Latest',      'guardian_news'),
+			'most-viewed'   => __('Most Viewed', 'guardian_news'),
+			'relevance'     => __('Relevance',   'guardian_news')
+			);
+		$field_id = $this->get_field_id($field);
 		$field_name = $this->get_field_name($field);
-		echo "\r\n".'<p><label for="'.$field_id.'">'.__('Order', 'guardian_news').': <input type="text" class="widefat" id="'.$field_id.'" name="'.$field_name.'" value="'.attribute_escape( $instance[$field] ).'" /><label></p>';
+		echo "<p><label for='{$field_id}'>{$label}</label>" .
+				"<select id='{$field_id}' class='widefat' name='{$field_name}' size='1'>";
+				foreach ($options as $value => $description) {
+					$selected = ( $instance[$field] == $value ) ? "selected='selected'" : '';
+					echo "<option value='{$value}' {$selected}>{$description}</option>";
+				}
+		echo	"</select>" .
+			 '</p>';
 
 	}
 
@@ -242,7 +293,7 @@ class Guardian_Widget extends WP_Widget {
 	 * come back from the Guardian Content API.  (When asking for most viewed for a given section, we always get 10 results)
 	 */
 	private function extract_headlines ($data, $quantity) {
-		$headlines = array();
+		$headlines_configs = array();
 
 		for ($i = 0; $i < $quantity; $i++ ) {
 			$headlines[] = new gu_headline(
