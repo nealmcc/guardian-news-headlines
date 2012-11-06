@@ -94,11 +94,19 @@ class Guardian_Headlines {
 
 	/** Enqueue our scripts and styles for the admin side. */
 	public function admin_scripts() {
-		wp_register_script('guardian_headlines_admin',
-							plugins_url('guardian_headlines.js', __FILE__),
+		wp_register_script('gu_widget_admin',
+							plugins_url('gu_widget_admin.js', __FILE__),
 							$deps = array('jquery', 'jquery-ui-core', 'jquery-ui-tabs'),
-							$this->version);
-		wp_enqueue_script('guardian_headlines_admin');
+							$this->version
+							);
+		wp_enqueue_script('gu_widget_admin');
+
+		wp_register_style('gu_widget_admin_style',
+							plugins_url('gu_widget_admin.css', __FILE_),
+							$deps = false,
+							$this->version
+							);
+		wp_enqueue_style('gu_widget_admin_style');
 	}
 
 }
