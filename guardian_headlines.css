@@ -15,7 +15,7 @@
 
 .widget_guardian_widget .gu_headline img {
 	float: left;
-	max-width: 25%;
+	max-width: 35%;
 	margin: 0;
 	padding: 0;
 	border: none;
@@ -23,7 +23,7 @@
 
 .widget_guardian_widget .gu_headline h3 {
 	float: right;
-	width: 70%;
+	width: 60%;
 	margin: -2px 0 0 0;
 	padding: 0;
 	line-height: 1.3em;
