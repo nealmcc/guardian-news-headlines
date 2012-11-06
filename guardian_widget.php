@@ -299,7 +299,7 @@ class Guardian_Widget extends WP_Widget {
 			$headlines[] = new gu_headline(
 							$data[$i]->fields->headline,
 							$data[$i]->fields->standfirst,
-							$data[$i]->fields->thumbnail,
+							( !empty ($data[$i]->fields->thumbnail) ) ? $data[$i]->fields->thumbnail : '',
 							$data[$i]->webUrl
 							);
 		}
