@@ -182,45 +182,51 @@ class Guardian_Widget extends WP_Widget {
 
 		$field = 'type';
 		$label = __('Type of Feed:', 'guardian_news');
-		$options = array (
-			'category'  => __('Category', 'guardian_news'),
-			'search'    => __('Search',   'guardian_news')
-			);
-		$field_id = $this->get_field_id($field);
-		$field_name = $this->get_field_name($field);
-		echo "<p>{$label}<br />";
-		foreach ($options as $value => $description) {
-			$checked = ( $instance[$field] == $value ) ? 'checked="true" ' : '';
-			echo "<input id='{$field_id}_{$value}' type='radio' name='{$field_name}' value='{$value}' {$checked}/>" .
-				 "<label for='{$field_id}_{$value}'> {$description}</label><br />";
-		}
-		echo '</p>';
-
-		$field = 'section';
-		$label = __('Category:', 'guardian_news');
-		$options = get_option('guardian_headlines_sections');
 		$field_id = $this->get_field_id($field);
 		$field_name = $this->get_field_name($field);
 		$value = esc_attr($instance[$field]);
-		echo "<p><label for='{$field_id}'>{$label}</label>" .
-				"<select id='{$field_id}' class='widefat' name='{$field_name}' size='1'>";
-				foreach ($options as $section) {
-					$selected = ( $instance[$field] == $section->id ) ? "selected='selected'" : '';
-					echo "<option value='{$section->id}' {$selected}>{$section->webTitle}</option>";
-				}
-		echo	"</select>" .
-			 '</p>';
+		echo "<input id='{$field_id}' type='hidden' name='{$field_name}' value='{$value}' />";
+?>
+		<div id="<?php echo $this->id; ?>_tabs">
+			<ul>
+				<li><a href="#<?php echo $this->id . '_category'?>"><?php echo __('Category', 'guardian_news'); ?></a></li>
+				<li><a href="#<?php echo $this->id . '_search'?>"><?php echo __('Search', 'guardian_news'); ?></a></li>
+			</ul>
+			<div id="<?php echo $this->id . '_category'; ?>">
+<?php
+				$field = 'section';
+				$label = __('Category:', 'guardian_news');
+				$options = get_option('guardian_headlines_sections');
+				$field_id = $this->get_field_id($field);
+				$field_name = $this->get_field_name($field);
+				$value = esc_attr($instance[$field]);
+				echo "<p><label for='{$field_id}'>{$label}</label>" .
+						"<select id='{$field_id}' class='widefat' name='{$field_name}' size='1'>";
+						foreach ($options as $section) {
+							$selected = ( $instance[$field] == $section->id ) ? "selected='selected'" : '';
+							echo "<option value='{$section->id}' {$selected}>{$section->webTitle}</option>";
+						}
+				echo	"</select>" .
+					 '</p>';
+?>
+			</div>
+			<div id="<?php echo $this->id . '_search'; ?>">
+<?php
+				$field = 'search';
+				$label = __('Search Term:', 'guardian_news');
+				$field_id = $this->get_field_id($field);
+				$field_name = $this->get_field_name($field);
+				$value = esc_attr($instance[$field]);
+				echo '<p>' .
+						"<label for='{$field_id}'>{$label}" .
+						"<input id='{$field_id}' type='text' class='widefat' name='{$field_name}' value='{$value}' />" .
+						'<label>' .
+					 '</p>';
+?>
+			</div>
 
-		$field = 'search';
-		$label = __('Search Term:', 'guardian_news');
-		$field_id = $this->get_field_id($field);
-		$field_name = $this->get_field_name($field);
-		$value = esc_attr($instance[$field]);
-		echo '<p>' .
-				"<label for='{$field_id}'>{$label}" .
-				"<input id='{$field_id}' type='text' class='widefat' name='{$field_name}' value='{$value}' />" .
-				'<label>' .
-			 '</p>';
+		</div>
+<?php
 
 		$field = 'quantity';
 		$label = __('Quantity (between 1 and 10):', 'guardian_news'); //Max API quantity is 10 for most-viewed in a section. 50 for other queries.
@@ -250,6 +256,16 @@ class Guardian_Widget extends WP_Widget {
 				}
 		echo	"</select>" .
 			 '</p>';
+
+		?>
+		<script type="text/javascript">
+		<![CDATA[
+			jQuery(document).ready(function() {
+				gu_widget_admin("<?php echo $this->id; ?>");
+			});
+		]]>
+		</script>
+		<?php
 
 	}
 
