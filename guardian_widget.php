@@ -228,8 +228,8 @@ class Guardian_Widget extends WP_Widget {
 		$field_name = $this->get_field_name($field);
 		$value = esc_attr($instance[$field]);
 		echo '<p>' .
-				"<label for='{$field_id}'> {$label}" .
-				"<input id='{$field_id}' type='number' min='1' max='10' class='widefat' name='{$field_name}' value='{$value}' />" .
+				"<label for='{$field_id}'>{$label} " .
+				"<input id='{$field_id}' type='number' min='1' max='10' name='{$field_name}' value='{$value}' />" .
 				'</label>' .
 			 '</p>';
 
