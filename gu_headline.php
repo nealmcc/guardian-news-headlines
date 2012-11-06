@@ -41,7 +41,7 @@ class Gu_Headline {
 		$this->headline = wp_kses($headline, $allowed_html);
 		$this->teaser = wp_kses($teaser, $allowed_html);
 		$this->thumbnail = wp_kses($thumbnail, $allowed_html);
-		$this->url = wp_kses($url, $allowed_html);
+		$this->url = wp_kses($url, $allowed_html) . '?cmp=wp-plugin';
 	}
 
 	/** Display this headline to stdout.
