@@ -259,11 +259,11 @@ class Guardian_Widget extends WP_Widget {
 
 		?>
 		<script type="text/javascript">
-		<![CDATA[
+		//<!--<![CDATA[
 			jQuery(document).ready(function() {
 				gu_widget_admin("<?php echo $this->id; ?>");
 			});
-		]]>
+		//-->]]>
 		</script>
 		<?php
 

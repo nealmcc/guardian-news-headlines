@@ -1,3 +1,4 @@
 function gu_widget_admin(widget_id) {
-	jQuery("#" + widget_id + "_tabs").tabs();
+	var tabs_id = '#' + widget_id + '_tabs';
+	jQuery(tabs_id).tabs();
 }
