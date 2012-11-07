@@ -193,20 +193,18 @@ class Guardian_Widget extends WP_Widget {
 		$field = 'order';
 		$label = __('Order Headlines by:', 'guardian_headlines');
 		$options = array (
-			'latest'        => __('Latest',      'guardian_headlines'),
-			'most-viewed'   => __('Most Viewed', 'guardian_headlines'),
-			'relevance'     => __('Relevance',   'guardian_headlines')
-			);
+				'latest'        => __('Latest',      'guardian_headlines'),
+				'most-viewed'   => __('Most Viewed', 'guardian_headlines')
+				);
 		$field_id = $this->get_field_id($field);
 		$field_name = $this->get_field_name($field);
-		echo "<p><label for='{$field_id}'>{$label}</label>" .
-				"<select id='{$field_id}' class='widefat' name='{$field_name}' size='1'>";
-				foreach ($options as $value => $description) {
-					$selected = ( $instance[$field] == $value ) ? "selected='selected'" : '';
-					echo "<option value='{$value}' {$selected}>{$description}</option>";
-				}
-		echo	"</select>" .
-			 '</p>';
+		echo "<p>{$label}<br />";
+			foreach ($options as $value => $description) {
+				$checked = ( $instance[$field] == $value )? 'checked="true"' : '';
+				echo "<input id='{$field_id}_{$value}' type='radio' name='{$field_name}' value='$value' $checked />" .
+					 "<label for='{$field_id}_{$value}'> {$description}</label><br />";
+			}
+		echo '</p>';
 
 		$field = 'quantity';
 		$label = __('Quantity (between 1 and 10):', 'guardian_headlines'); //Max API quantity is 10 for most-viewed in a section. 50 for other queries.
@@ -221,12 +219,12 @@ class Guardian_Widget extends WP_Widget {
 
 		$field = 'edition';
 		$label = __('Edition:', 'guardian_headlines');
-		$field_id = $this->get_field_id($field);
-		$field_name = $this->get_field_name($field);
 		$options = array (
 					'US'	=> __('US', 'guardian_headlines'),
 					'UK'	=> __('UK and World', 'guardian_headlines')
 					);
+		$field_id = $this->get_field_id($field);
+		$field_name = $this->get_field_name($field);
 		echo "<p>{$label}<br />";
 			foreach ($options as $value => $description) {
 				$checked = ( $instance[$field] == $value )? 'checked="true"' : '';
