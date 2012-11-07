@@ -102,7 +102,7 @@ class Guardian_Headlines {
 		wp_enqueue_script('gu_widget_admin');
 
 		wp_register_style('gu_widget_admin_style',
-							plugins_url('gu_widget_admin.css', __FILE_),
+							plugins_url('gu_widget_admin.css', __FILE__),
 							$deps = false,
 							$this->version
 							);
