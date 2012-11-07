@@ -49,6 +49,8 @@ class Guardian_Headlines {
 		add_action('wp_enqueue_scripts', array(&$this, 'front_scripts') );
 		add_action('admin_enqueue_scripts', array(&$this, 'admin_scripts') );
 
+		add_action('admin_notices', array(&$this, 'activate_notify'	));
+
 	}
 
 	/** Initial database setup for our plugin.
@@ -57,9 +59,8 @@ class Guardian_Headlines {
 	public function install() {
 		$section_list = json_decode(file_get_contents( GUARDIAN_HEADLINES_PATH . 'headlines_config.json'));
 
-		update_option("guardian_headlines_version", $this->version);
+		update_option('guardian_headlines_version', $this->version);
 		update_option('guardian_headlines_sections', $section_list);
-
 	}
 
 	/** Clean up behind ourselves.
@@ -68,6 +69,7 @@ class Guardian_Headlines {
 	public function uninstall() {
 		delete_option('guardian_headlines_version');
 		delete_option('guardian_headlines_sections');
+		delete_option('guardian_headlines_notified');
 	}
 
 	/**
@@ -103,5 +105,25 @@ class Guardian_Headlines {
 		wp_enqueue_style('gu_widget_admin_style');
 	}
 
+	/** Thank the user for installing the plugin, and point them at the widget page */
+	public function activate_notify() {
+		$notified = get_option('guardian_headlines_notified', false);
+		if ( ( $notified === false) && (current_user_can('edit_theme_options') ) ) {
+			echo '<div class="updated">'.
+					'<p>'.
+					__('Thanks for installing The Guardian Headlines.', 'guardian_headlines') . '<br />'.
+					__('To set up your headline feed, add <em>The Guardian Headlines</em> ', 'guardian_headlines') .
+					'<a href="'. admin_url('widgets.php') .'">' . __('Widget','guardian_headlines') . '</a> '.
+					__('to your sidebar of choice. :)', 'guardian_headlines') . '<br />'.
+					'<a href="'. admin_url('widgets.php'). '">&#187; ' . __('Widgets page', 'guardian_headlines') . '</a>'.
+					'</p>'.
+				'</div>';
+
+			update_option('guardian_headlines_notified', 'true');
+		}
+	}
 }
+
+
+
 ?>
