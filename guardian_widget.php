@@ -194,8 +194,8 @@ class Guardian_Widget extends WP_Widget {
 		$field_id = $this->get_field_id($field);
 		$field_name = $this->get_field_name($field);
 		$value = esc_attr($instance[$field]);
-		echo "<p><label for='{$field_id}'>{$label}</label>" .
-				"<select id='{$field_id}' class='widefat' name='{$field_name}' size='1'>";
+		echo "<p><label for='{$field_id}'>{$label} </label>" .
+				"<select id='{$field_id}' name='{$field_name}' size='1'>";
 			for ($i = 1; $i <= 10; $i++) {
 				$selected = ( $instance[$field] == $i ) ? "selected='selected'" : '';
 				echo "<option value='{$i}' {$selected}>{$i}</option>";
@@ -206,8 +206,8 @@ class Guardian_Widget extends WP_Widget {
 		$field = 'edition';
 		$label = __('Edition:', 'guardian_headlines');
 		$options = array (
-					'US'	=> __('US', 'guardian_headlines'),
-					'UK'	=> __('UK and World', 'guardian_headlines')
+					'UK'	=> __('UK and World', 'guardian_headlines'),
+					'US'	=> __('US', 'guardian_headlines')
 					);
 		$field_id = $this->get_field_id($field);
 		$field_name = $this->get_field_name($field);
