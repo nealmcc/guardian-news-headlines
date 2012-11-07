@@ -86,11 +86,11 @@ class Guardian_Widget extends WP_Widget {
 	 * @param array $old_instance Previously saved values from database.
 	 *
 	 * widget options:
-	 * 'title'  => any string, displayed above the widget
+	 * 'title'      => any string, displayed above the widget
 	 * 'section'    => the id of one of of the news sections defined in headlines_config.json
-	 * 'order'  => can be 'latest' or 'most-viewed'
-	 *         NOTE: a special restriction exists for a category query for the "index" section.  In this case,
-	 *           only a 'most-viewed' query will return any results, 'latest' will return nothing useful.
+	 * 'order'      => can be 'latest' or 'most-viewed'
+	 *              NOTE: a special restriction exists for a category query for the "index" section.  In this case,
+	 *                    only a 'most-viewed' query will return any results, 'latest' will return nothing useful.
 	 * 'quantity'   => can be between 1 and 10
 	 *
 	 * 'edition' => either 'US' or 'UK'
@@ -101,55 +101,38 @@ class Guardian_Widget extends WP_Widget {
 	public function update($new, $old) {
 		$new = wp_parse_args( (array) $new, $this->default_config );
 
-		$save['title'] = sanitize_text_field($new['title']);
+		$field = 'title';
+		$save[$field] = sanitize_text_field($new[$field]);
 
-		$field = 'type';
-		$allowed = array('category', 'search');
-		$save[$field] = ( in_array($new[$field], $allowed) ) ? $new[$field] : $old[$field];
-
-		if ( $save['type'] == 'category' ) {
-
-			$save['search'] = '';
-
-			$field = 'section';
-			$allowed = array();
-			$sections = get_option('guardian_headlines_sections');
-			foreach ($sections as $section) {
-				$allowed[] = $section->id;
-			}
-
-			$save[$field] = ( in_array($new[$field], $allowed) ) ? $new[$field] : $this->default_config[$field];
-
-			if ( $save['section'] == 'index' ) { //the index section only has data for most-viewed, not latest.
-				$save['order'] = 'most-viewed';
-			} else {
-				$field = 'order';
-				$allowed = array('latest','most-viewed');
-				$save[$field] = ( in_array($new[$field], $allowed) ) ? $new[$field] : 'latest';
-			}
-
-		} else { // type = search
-
-			$save['section'] = '';
-
-			$field = 'search';
-			$save[$field] = sanitize_text_field($new[$field]);
-			if ( empty($save[$field]) )
-				$save[$field] = 'news';
-
-			$field = 'order';
-			$allowed = array('latest','relevance');
-			$save[$field] = ( in_array($new[$field], $allowed) ) ? $new[$field] : 'latest';
+		$field = 'section';
+		$allowed = array();
+		$sections = get_option('guardian_headlines_sections');
+		foreach ($sections as $section) {
+			$allowed[] = $section->id;
 		}
+		$save[$field] = ( in_array($new[$field], $allowed) ) ? $new[$field] : $this->default_config[$field];
+
+		$field = 'order';
+		$allowed = ( $save['section'] == 'index' ) ? array('most-viewed') : array('latest','most-viewed');
+		$save[$field] = ( in_array($new[$field], $allowed) ) ? $new[$field] : $this->default_config[$field];
+
 
 		$field = 'quantity';
-		if ( intval($new[$field]) < 1 ) {
-			$save[$field] = 1;
-		} else if ( intval($new[$field]) > 10 ) {
-			$save[$field] = 10;
+		if ( ! is_numeric($new[$field]) ) {
+			$save[$field] = $this->default_config[$field];
 		} else {
-			$save[$field] = intval($new[$field]);
+			if ( intval($new[$field]) < 1 ) {
+				$save[$field] = 1;
+			} else if ( intval($new[$field]) > 10 ) {
+				$save[$field] = 10;
+			} else {
+				$save[$field] = intval($new[$field]);
+			}
 		}
+
+		$field = 'edition';
+		$allowed = array('UK','US');
+		$save[$field] = ( in_array($new[$field], $allowed) ) ? $new[$field] : $this->default_config[$field];
 
 		return $save;
 	}
