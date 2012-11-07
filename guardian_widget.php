@@ -190,15 +190,18 @@ class Guardian_Widget extends WP_Widget {
 		echo '</p>';
 
 		$field = 'quantity';
-		$label = __('Quantity (between 1 and 10):', 'guardian_headlines'); //Max API quantity is 10 for most-viewed in a section. 50 for other queries.
+		$label = __('Quantity:', 'guardian_headlines');
 		$field_id = $this->get_field_id($field);
 		$field_name = $this->get_field_name($field);
 		$value = esc_attr($instance[$field]);
-		echo '<p>' .
-				"<label for='{$field_id}'>{$label} " .
-				"<input id='{$field_id}' class='widefat' type='number' min='1' max='10' name='{$field_name}' value='{$value}' />" .
-				'</label>' .
-			 '</p>';
+		echo "<p><label for='{$field_id}'>{$label}</label>" .
+				"<select id='{$field_id}' class='widefat' name='{$field_name}' size='1'>";
+			for ($i = 1; $i <= 10; $i++) {
+				$selected = ( $instance[$field] == $i ) ? "selected='selected'" : '';
+				echo "<option value='{$i}' {$selected}>{$i}</option>";
+			}
+		echo   '</select>' .
+			'</p>';
 
 		$field = 'edition';
 		$label = __('Edition:', 'guardian_headlines');
