@@ -36,8 +36,7 @@ class Guardian_Widget extends WP_Widget {
 			'title'     => 'Latest from The Guardian',
 			'section'   => 'commentisfree',
 			'order'     => 'latest',
-			'quantity'  => 5,
-			'edition'   => "UK"
+			'quantity'  => 5
 			);
 
 	public function __construct() {
@@ -130,10 +129,6 @@ class Guardian_Widget extends WP_Widget {
 			}
 		}
 
-		$field = 'edition';
-		$allowed = array('UK','US');
-		$save[$field] = ( in_array($new[$field], $allowed) ) ? $new[$field] : $this->default_config[$field];
-
 		return $save;
 	}
 
@@ -203,22 +198,6 @@ class Guardian_Widget extends WP_Widget {
 		echo   '</select>' .
 			'</p>';
 
-		$field = 'edition';
-		$label = __('Edition:', 'guardian_headlines');
-		$options = array (
-					'UK'	=> __('UK and World', 'guardian_headlines'),
-					'US'	=> __('US', 'guardian_headlines')
-					);
-		$field_id = $this->get_field_id($field);
-		$field_name = $this->get_field_name($field);
-		echo "<p>{$label}<br />";
-			foreach ($options as $value => $description) {
-				$checked = ( $instance[$field] == $value )? 'checked="true"' : '';
-				echo "<input id='{$field_id}_{$value}' type='radio' name='{$field_name}' value='$value' $checked />" .
-					 "<label for='{$field_id}_{$value}'> {$description}</label><br />";
-			}
-		echo '</p>';
-
 	}
 
 
@@ -286,8 +265,7 @@ class Guardian_Widget extends WP_Widget {
 			'format'      => 'json',
 			'show-fields' => 'thumbnail,standfirst,headline',
 			'order-by'    => 'newest',
-			'pageSize'    => $widget_options['quantity'],
-			'edition'     => $widget_options['edition']
+			'pageSize'    => $widget_options['quantity']
 			);
 
 		if ( $widget_options['order'] == 'most-viewed' )
