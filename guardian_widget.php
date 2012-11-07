@@ -34,18 +34,17 @@ class Guardian_Widget extends WP_Widget {
 
 	private $default_config = array(
 			'title'     => 'Latest from The Guardian',
-			'type'      => 'category',
-			'section'   => 'news',
-			'search'    => '',                          // only relevant for 'search' type widgets
+			'section'   => 'commentisfree',
+			'order'     => 'latest',
 			'quantity'  => 5,
-			'order'     => 'latest'
+			'edition'   => "UK"
 			);
 
 	public function __construct() {
 		parent::__construct(
 			'guardian_widget', // Base ID
 			'The Guardian Headlines', // Name
-			array( 'description' => __( 'Displays news headlines from The Guardian', 'guardian_news' ), ) // Args
+			array( 'description' => __( 'Displays news headlines from The Guardian', 'guardian_headlines' ), ) // Args
 		);
 	}
 
@@ -88,18 +87,13 @@ class Guardian_Widget extends WP_Widget {
 	 *
 	 * widget options:
 	 * 'title'  => any string, displayed above the widget
-	 * 'type'   => either 'category' or 'search'
-	 * 'section'    => only meaningful for a 'category' widget, and must be the id of one of of the news sections defined in headlines_config.json
-	 * 'search' => only meaningful for an 'search' widget, and then will be passed directly to the guardian search API.
-	 *         searches can contain the following special characters:
-	 *          ,   means AND
-	 *          |   means OR
-	 *          -   means NOT
-	 * 'order'  => can be 'latest' or 'most-viewed' for category queries
-	 *         can be 'latest' or 'most-relevant' for search queries
+	 * 'section'    => the id of one of of the news sections defined in headlines_config.json
+	 * 'order'  => can be 'latest' or 'most-viewed'
 	 *         NOTE: a special restriction exists for a category query for the "index" section.  In this case,
 	 *           only a 'most-viewed' query will return any results, 'latest' will return nothing useful.
 	 * 'quantity'   => can be between 1 and 10
+	 *
+	 * 'edition' => either 'US' or 'UK'
 	 *
 	 * @return array Updated safe values to be saved.
 	 * If "false" is returned, the instance won't be saved/updated.
@@ -171,7 +165,7 @@ class Guardian_Widget extends WP_Widget {
 		$instance = wp_parse_args( (array) $instance, $this->default_config );
 
 		$field = 'title';
-		$label = __('Widget Title:', 'guardian_news');
+		$label = __('Title:', 'guardian_headlines');
 		$field_id = $this->get_field_id($field);
 		$field_name = $this->get_field_name($field);
 		$value = esc_attr($instance[$field]);
@@ -180,71 +174,28 @@ class Guardian_Widget extends WP_Widget {
 				"<input id='{$field_id}' type='text' class='widefat' name='{$field_name}' value='{$value}' />" .
 			"</p>";
 
-		$field = 'type';
-		$label = __('Type of Feed:', 'guardian_news');
+
+		$field = 'section';
+		$label = __('Category:', 'guardian_headlines');
+		$options = get_option('guardian_headlines_sections');
 		$field_id = $this->get_field_id($field);
 		$field_name = $this->get_field_name($field);
 		$value = esc_attr($instance[$field]);
-		echo "<input id='{$field_id}' type='hidden' name='{$field_name}' value='{$value}' />";
-?>
-		<div id="<?php echo $this->id; ?>_tabs">
-			<ul>
-				<li><a href="#<?php echo $this->id . '_category'?>"><?php echo __('Category', 'guardian_news'); ?></a></li>
-				<li><a href="#<?php echo $this->id . '_search'?>"><?php echo __('Search', 'guardian_news'); ?></a></li>
-			</ul>
-			<div id="<?php echo $this->id . '_category'; ?>">
-<?php
-				$field = 'section';
-				$label = __('Category:', 'guardian_news');
-				$options = get_option('guardian_headlines_sections');
-				$field_id = $this->get_field_id($field);
-				$field_name = $this->get_field_name($field);
-				$value = esc_attr($instance[$field]);
-				echo "<p><label for='{$field_id}'>{$label}</label>" .
-						"<select id='{$field_id}' class='widefat' name='{$field_name}' size='1'>";
-						foreach ($options as $section) {
-							$selected = ( $instance[$field] == $section->id ) ? "selected='selected'" : '';
-							echo "<option value='{$section->id}' {$selected}>{$section->webTitle}</option>";
-						}
-				echo	"</select>" .
-					 '</p>';
-?>
-			</div>
-			<div id="<?php echo $this->id . '_search'; ?>">
-<?php
-				$field = 'search';
-				$label = __('Search Term:', 'guardian_news');
-				$field_id = $this->get_field_id($field);
-				$field_name = $this->get_field_name($field);
-				$value = esc_attr($instance[$field]);
-				echo '<p>' .
-						"<label for='{$field_id}'>{$label}" .
-						"<input id='{$field_id}' type='text' class='widefat' name='{$field_name}' value='{$value}' />" .
-						'<label>' .
-					 '</p>';
-?>
-			</div>
-
-		</div>
-<?php
-
-		$field = 'quantity';
-		$label = __('Quantity (between 1 and 10):', 'guardian_news'); //Max API quantity is 10 for most-viewed in a section. 50 for other queries.
-		$field_id = $this->get_field_id($field);
-		$field_name = $this->get_field_name($field);
-		$value = esc_attr($instance[$field]);
-		echo '<p>' .
-				"<label for='{$field_id}'>{$label} " .
-				"<input id='{$field_id}' type='number' min='1' max='10' name='{$field_name}' value='{$value}' />" .
-				'</label>' .
+		echo "<p><label for='{$field_id}'>{$label}</label>" .
+				"<select id='{$field_id}' class='widefat' name='{$field_name}' size='1'>";
+				foreach ($options as $section) {
+					$selected = ( $instance[$field] == $section->id ) ? "selected='selected'" : '';
+					echo "<option value='{$section->id}' {$selected}>{$section->webTitle}</option>";
+				}
+		echo	"</select>" .
 			 '</p>';
 
 		$field = 'order';
-		$label = __('Order Headlines by:', 'guardian_news');
+		$label = __('Order Headlines by:', 'guardian_headlines');
 		$options = array (
-			'latest'        => __('Latest',      'guardian_news'),
-			'most-viewed'   => __('Most Viewed', 'guardian_news'),
-			'relevance'     => __('Relevance',   'guardian_news')
+			'latest'        => __('Latest',      'guardian_headlines'),
+			'most-viewed'   => __('Most Viewed', 'guardian_headlines'),
+			'relevance'     => __('Relevance',   'guardian_headlines')
 			);
 		$field_id = $this->get_field_id($field);
 		$field_name = $this->get_field_name($field);
@@ -257,15 +208,32 @@ class Guardian_Widget extends WP_Widget {
 		echo	"</select>" .
 			 '</p>';
 
-		?>
-		<script type="text/javascript">
-		//<!--<![CDATA[
-			jQuery(document).ready(function() {
-				gu_widget_admin("<?php echo $this->id; ?>");
-			});
-		//-->]]>
-		</script>
-		<?php
+		$field = 'quantity';
+		$label = __('Quantity (between 1 and 10):', 'guardian_headlines'); //Max API quantity is 10 for most-viewed in a section. 50 for other queries.
+		$field_id = $this->get_field_id($field);
+		$field_name = $this->get_field_name($field);
+		$value = esc_attr($instance[$field]);
+		echo '<p>' .
+				"<label for='{$field_id}'>{$label} " .
+				"<input id='{$field_id}' class='widefat' type='number' min='1' max='10' name='{$field_name}' value='{$value}' />" .
+				'</label>' .
+			 '</p>';
+
+		$field = 'edition';
+		$label = __('Edition:', 'guardian_headlines');
+		$field_id = $this->get_field_id($field);
+		$field_name = $this->get_field_name($field);
+		$options = array (
+					'US'	=> __('US', 'guardian_headlines'),
+					'UK'	=> __('UK and World', 'guardian_headlines')
+					);
+		echo "<p>{$label}<br />";
+			foreach ($options as $value => $description) {
+				$checked = ( $instance[$field] == $value )? 'checked="true"' : '';
+				echo "<input id='{$field_id}_{$value}' type='radio' name='{$field_name}' value='$value' $checked />" .
+					 "<label for='{$field_id}_{$value}'> {$description}</label><br />";
+			}
+		echo '</p>';
 
 	}
 
@@ -334,21 +302,14 @@ class Guardian_Widget extends WP_Widget {
 			'format'      => 'json',
 			'show-fields' => 'thumbnail,standfirst,headline',
 			'order-by'    => 'newest',
-			'pageSize'    => $widget_options['quantity']
+			'pageSize'    => $widget_options['quantity'],
+			'edition'     => $widget_options['edition']
 			);
 
-		if ( $widget_options['type'] == 'category' ) {
-			$base = $widget_options['section'] . '?';
-			if ( $widget_options['order'] != 'latest' ) {
-				$query['show-most-viewed'] = 'true';
-			}
-		} else { // advanced query - we're searching for a term
-			$base = 'search?';
-			$query['q'] = $widget_options['search'];
-			if ( $widget_options['order'] != 'latest' ) {
-				$query['order-by'] = 'relevance';
-			}
-		}
+		if ( $widget_options['order'] == 'most-viewed' )
+			$query['show-most-viewed'] = 'true';
+
+		$base = $widget_options['section'] . '?';
 
 		$built_query = http_build_query($query, null, '&');
 
