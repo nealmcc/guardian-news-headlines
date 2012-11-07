@@ -32,12 +32,8 @@ require_once (GUARDIAN_HEADLINES_PATH . 'gu_headline.php');
  */
 class Guardian_Widget extends WP_Widget {
 
-	private $default_config = array(
-			'title'     => 'Latest from The Guardian',
-			'section'   => 'commentisfree',
-			'order'     => 'latest',
-			'quantity'  => 5
-			);
+	private $default_config = array();
+	private $logos = array();
 
 	public function __construct() {
 		parent::__construct(
@@ -45,6 +41,33 @@ class Guardian_Widget extends WP_Widget {
 			'The Guardian Headlines', // Name
 			array( 'description' => __( 'Displays news headlines from The Guardian', 'guardian_headlines' ), ) // Args
 		);
+
+		$this->default_config = array(
+			'title'     => 'Latest from The Guardian',
+			'section'   => 'commentisfree',
+			'order'     => 'latest',
+			'quantity'  => 5,
+			'logo'      => 'normal'
+			);
+
+		$this->logos = array (
+			'normal' => array(	'desc' => __('Normal', 'guardian_headlines'),
+								'demo' => '/img/logo-normal.jpg',
+								'live' => '/img/poweredbyguardian.png'
+							),
+			'black' => 	array(	'desc' => __('Black', 'guardian_headlines'),
+								'demo' => '/img/logo-black.jpg',
+								'live' => '/img/poweredbyguardianBLACK.png'
+							),
+			'reverse' => array(	'desc' => __('Reverse', 'guardian_headlines'),
+								'demo' => '/img/logo-reverse.jpg',
+								'live' => '/img/poweredbyguardianREV.png'
+							),
+			'white' => array(	'desc' => __('White', 'guardian_headlines'),
+								'demo' => '/img/logo-white.jpg',
+								'live' => '/img/poweredbyguardianWHITE.png'
+							)
+			);
 	}
 
 	/** Echo the widget content.
@@ -71,6 +94,7 @@ class Guardian_Widget extends WP_Widget {
 			$headline->display();
 			echo '</div>';
 		}
+		$this->show_logo($instance['logo']);
 
 		echo $after_widget;
 	}
@@ -92,7 +116,7 @@ class Guardian_Widget extends WP_Widget {
 	 *                    only a 'most-viewed' query will return any results, 'latest' will return nothing useful.
 	 * 'quantity'   => can be between 1 and 10
 	 *
-	 * 'edition' => either 'US' or 'UK'
+	 * 'logo'		=> one of 'normal', 'black', 'white', or 'reverse'
 	 *
 	 * @return array Updated safe values to be saved.
 	 * If "false" is returned, the instance won't be saved/updated.
@@ -128,6 +152,13 @@ class Guardian_Widget extends WP_Widget {
 				$save[$field] = intval($new[$field]);
 			}
 		}
+
+		$field = 'logo';
+		$allowed = array();
+		foreach ($this->logos as $id => $logo) {
+			$allowed[] = $id;
+		}
+		$save[$field] = ( in_array($new[$field], $allowed) ) ? $new[$field] : $this->default_config[$field];
 
 		return $save;
 	}
@@ -197,6 +228,25 @@ class Guardian_Widget extends WP_Widget {
 			}
 		echo   '</select>' .
 			'</p>';
+
+		$field = 'logo';
+		$label = __('Logo:', 'guardian_headlines');
+		$field_id = $this->get_field_id($field);
+		$field_name = $this->get_field_name($field);
+		$value = esc_attr($instance[$field]);
+		$url_base = plugins_url('', __FILE__ );
+		echo $label . '<ul class="gu_widget_admin_logo">';
+		foreach ($this->logos as $type => $details) {
+			$checked = ( $instance[$field] == $type ) ? 'checked="true"' : '';
+			echo "<li>" .
+					"<label for='{$field_id}_{$type}'>" .
+						"<img alt='{$details['desc']}' src='{$url_base}{$details['demo']}' />" .
+					"</label><br />" .
+					"<input id='{$field_id}_{$type}' type='radio' name='{$field_name}' value='{$type}' {$checked}/>" .
+					"<label for='{$field_id}_{$type}'> {$details['desc']}</label>" .
+				"</li>";
+		}
+		echo '</ul>';
 
 	}
 
@@ -278,5 +328,15 @@ class Guardian_Widget extends WP_Widget {
 		return $base . $built_query;
 	}
 
+	/** Display the powered by The Guardian logo and link */
+	private function show_logo($type = 'normal') {
+		$link_url = 'http://www.guardian.co.uk/open-platform';
+		$img_url = plugins_url($this->logos[$type]['live'], __FILE__ );
+		$alt_text = __('Powered by The Guardian', 'guardian_headlines');
+
+		echo "<div class='powered_by'><a href='{$link_url}'>" .
+				"<img alt='{$alt_text}' src='{$img_url}' />" .
+			 "</a></div>";
+	}
 
 }//class Guardian_Widget

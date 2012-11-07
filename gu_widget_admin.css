@@ -1,0 +1,16 @@
+.widget-content ul.gu_widget_admin_logo {
+	margin: 0;
+	padding: 0;
+	list-style-type: none;
+}
+
+ul.gu_widget_admin_logo li {
+	margin: 0 1% 1em;
+	padding: 0;
+	width: 47.9%;
+	float: left;
+}
+
+ul.gu_widget_admin_logo img {
+	max-width: 100%;
+}
