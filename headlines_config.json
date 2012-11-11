@@ -1,6 +1,5 @@
 [
     {"id": "index",                "webTitle": "All"},
-    {"id": "news",                 "webTitle": "News"},
     {"id": "uk",                   "webTitle": "UK"},
     {"id": "world",                "webTitle": "World"},
     {"id": "artanddesign",         "webTitle": "Art &amp; design"},
