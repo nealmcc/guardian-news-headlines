@@ -262,20 +262,31 @@ class Guardian_Widget extends WP_Widget {
 
 		$url = 'http://content.guardianapis.com/';
 		$query = $this->build_query($widget_options);
-		$feed = json_decode(file_get_contents($url . $query));
+
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_TIMEOUT, 2);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+		curl_setopt($ch, CURLOPT_URL, $url . $query);
+
+		$feed = curl_exec($ch);
+
+		curl_close($ch);
+
+		$results = json_decode($feed);
 
 		$headlines = array();
-		if ( empty($feed) || ($feed->response->status != 'ok' ) ) {
+		if ( empty($results) || ($results->response->status != 'ok' ) ) {
 			return array();
 		}
 
 		// our data will be in a different part of the feed if we're asking for the most viewed articles.
 		if ( $widget_options['order'] == 'most-viewed' ) {
 			$quantity = $widget_options['quantity']; // most viewed always returns 10 results for a single news section
-			$data = $feed->response->mostViewed;
+			$data = $results->response->mostViewed;
 		} else {
-			$quantity = ( $feed->response->total < $widget_options['quantity'] ) ? $feed->response->total : $widget_options['quantity'];
-			$data = $feed->response->results;
+			$quantity = ( $results->response->total < $widget_options['quantity'] ) ? $results->response->total : $widget_options['quantity'];
+			$data = $results->response->results;
 		}
 
 		$headlines = $this->extract_headlines ($data, $quantity);
