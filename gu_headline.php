@@ -49,7 +49,7 @@ class Gu_Headline {
 		ob_start();
 		?>
 
-		<h3><a href="<?php echo $this->url; ?>"><?php echo $this->headline; ?></a></h3>
+		<p><a href="<?php echo $this->url; ?>"><?php echo $this->headline; ?></a></p>
 		<?php if ( !empty($this->thumbnail) ) : ?>
 			<img alt="" src="<?php echo $this->thumbnail; ?>" />
 		<?php endif; ?>
