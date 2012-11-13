@@ -25,7 +25,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 class Gu_Headline {
 	private $headline;
-	private $teaser;
 	private $thumbnail;
 	private $url;
 
@@ -35,11 +34,10 @@ class Gu_Headline {
 	 * @param thumbnail - string, containing a URL to the article's thumbnail
 	 * @param url 		- string, URL to the article itself
 	 */
-	function __construct ($headline, $teaser, $thumbnail, $url) {
+	function __construct ($headline, $thumbnail, $url) {
 		$allowed_html = array('a','p','em','strong','b','i');
 
 		$this->headline = wp_kses($headline, $allowed_html);
-		$this->teaser = wp_kses($teaser, $allowed_html);
 		$this->thumbnail = wp_kses($thumbnail, $allowed_html);
 		$this->url = wp_kses($url, $allowed_html) . '?cmp=wp-plugin';
 	}
@@ -47,7 +45,7 @@ class Gu_Headline {
 	/** Display this headline to stdout.
 	 * Does not address style issues.
 	 */
-	public function display($show_teaser = false) {
+	public function display() {
 		ob_start();
 		?>
 
@@ -55,7 +53,6 @@ class Gu_Headline {
 		<?php if ( !empty($this->thumbnail) ) : ?>
 			<img alt="" src="<?php echo $this->thumbnail; ?>" />
 		<?php endif; ?>
-		<?php if ($show_teaser) { echo '<p>' . $this->teaser . '</p>'; }?>
 
 		<?php
 		ob_end_flush();

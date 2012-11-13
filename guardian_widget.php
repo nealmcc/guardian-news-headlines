@@ -306,7 +306,6 @@ class Guardian_Widget extends WP_Widget {
 		for ($i = 0; $i < $quantity; $i++ ) {
 			$headlines[] = new gu_headline(
 							$data[$i]->fields->headline,
-							$data[$i]->fields->standfirst,
 							( !empty ($data[$i]->fields->thumbnail) ) ? $data[$i]->fields->thumbnail : '',
 							$data[$i]->webUrl
 							);
@@ -324,7 +323,7 @@ class Guardian_Widget extends WP_Widget {
 	private function build_query($widget_options) {
 		$query = array (
 			'format'      => 'json',
-			'show-fields' => 'thumbnail,standfirst,headline',
+			'show-fields' => 'thumbnail,headline',
 			'order-by'    => 'newest',
 			'pageSize'    => $widget_options['quantity']
 			);
