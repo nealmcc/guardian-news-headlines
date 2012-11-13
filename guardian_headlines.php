@@ -32,7 +32,7 @@ if ( !function_exists( 'add_action' ) ) {
 }
 
 define( 'GUARDIAN_HEADLINES_PATH', plugin_dir_path(__FILE__) );
-require_once ( GUARDIAN_HEADLINES_PATH . 'guardian_widget.php' );
+require_once ( GUARDIAN_HEADLINES_PATH . 'gu_widget.php' );
 
 $guardian_headlines = new Guardian_Headlines();
 
@@ -86,7 +86,7 @@ class Guardian_Headlines {
 
 	/** Inform Wordpress of our widget */
 	public function register_widgets() {
-		register_widget( 'Guardian_Widget' );
+		register_widget( 'Gu_Widget' );
 	}
 
 	/** Enqueue our scripts and styles for the front-facing side. */

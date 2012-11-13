@@ -26,18 +26,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 require_once (ABSPATH . WPINC . '/widgets.php');
 require_once (GUARDIAN_HEADLINES_PATH . 'gu_headline.php');
 
-/** Guardian_Widget is the base widget for each list of news headlines.
+/** Gu_Widget is the base widget for each list of news headlines.
  *
  * must over-ride WP_Widget::widget(), WP_Widget::update() and WP_Widget::form()
  */
-class Guardian_Widget extends WP_Widget {
+class Gu_Widget extends WP_Widget {
 
 	private $default_config = array();
 	private $logos = array();
 
 	public function __construct() {
 		parent::__construct(
-			'guardian_widget', // Base ID
+			'guardian_headlines_widget', // Base ID
 			'The Guardian Headlines', // Name
 			array( 'description' => __( 'Displays news headlines from The Guardian', 'guardian_headlines' ), ) // Args
 		);
@@ -318,7 +318,7 @@ class Guardian_Widget extends WP_Widget {
 	 * (see http://explorer.content.guardianapis.com/)
 	 * Base our query on the given widget options.
 	 * Assumes that the widget options have already been validated.
-	 * @see Guardian_Widget::update() for valid widget options
+	 * @see Gu_Widget::update() for valid widget options
 	 */
 	private function build_query($widget_options) {
 		$query = array (
@@ -349,4 +349,4 @@ class Guardian_Widget extends WP_Widget {
 			 "</a></div>";
 	}
 
-}//class Guardian_Widget
+}//class Gu_Widget
