@@ -46,6 +46,7 @@
 .widget_guardian_widget .powered_by img {
 	display: block;
 	float: right;
+	max-width: 100%;
 	margin: 0;
 	padding: 0;
 }
