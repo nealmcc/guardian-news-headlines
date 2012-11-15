@@ -253,17 +253,32 @@ class Gu_Widget extends WP_Widget {
 	}
 
 
-	/** Get the latest feed from The Guardian, for the given widget options.
-	 *
-	 * If an up-to-date cached version of this query is available, we'll use that first. (TODO)
-	 *
-	 * @param string $query the string to submit to the Guardian content API
-	 * @returns a (possibly empty) array of Gu_Headline objects
+	/** Get the headlines, for the given widget options.
+
+		If a fresh cached version of this query is available, we'll use that first.
+
+		@returns a (possibly empty) array of Gu_Headline objects
 	 */
 	private function get_headlines($widget_options) {
+		global $guardian_headlines;
 
+		$section = $widget_options['section'];
+		$order = $widget_options['order'];
+		$quantity = $widget_options['quantity'];
+		$headlines = $guardian_headlines->cache->headlines($section, $order, $quantity);
+
+		if ( $headlines === false ) {
+			$headlines = $this->fresh_headlines($section, $order, $quantity);
+			$guardian_headlines->cache->store($section, $order, $quantity, $headlines);
+		}
+
+		return $headlines;
+	}
+
+	/** Ask the Guardian Content API for some headlines */
+	private function fresh_headlines($section, $order, $quantity) {
 		$url = 'http://content.guardianapis.com/';
-		$query = $this->build_query($widget_options);
+		$query = $this->build_query($section, $order, $quantity);
 
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_TIMEOUT, 2);
@@ -283,11 +298,10 @@ class Gu_Widget extends WP_Widget {
 		}
 
 		// our data will be in a different part of the feed if we're asking for the most viewed articles.
-		if ( $widget_options['order'] == 'most-viewed' ) {
-			$quantity = $widget_options['quantity']; // most viewed always returns 10 results for a single news section
+		if ( $order == 'most-viewed' ) {
 			$data = $results->response->mostViewed;
 		} else {
-			$quantity = ( $results->response->total < $widget_options['quantity'] ) ? $results->response->total : $widget_options['quantity'];
+			$quantity = ( $results->response->total < $quantity ) ? $results->response->total : $quantity;
 			$data = $results->response->results;
 		}
 
@@ -297,14 +311,13 @@ class Gu_Widget extends WP_Widget {
 	}
 
 	/** given an array of Guardian feed data, create an array of Gu_Headline objects
-	 *
-	 * The provided $data array must have at least $quantity elements. (TODO - check this.)
-	 * We specify a quantity, rather than just taking everything from the array, because of how the mostViewed results
-	 * come back from the Guardian Content API.  (When asking for most viewed for a given section, we always get 10 results)
-	 */
-	private function extract_headlines ($data, $quantity) {
-		$headlines_configs = array();
 
+		The provided $data array must have at least $quantity elements.
+		We specify a quantity, rather than just taking everything from the array, because of how the mostViewed results
+		come back from the Guardian Content API.
+		(When asking for most viewed for a given section, we always get 10 results, and we might not want them all.)
+	**/
+	private function extract_headlines ($data, $quantity) {
 		for ($i = 0; $i < $quantity; $i++ ) {
 			$headlines[] = new gu_headline(
 							$data[$i]->fields->headline,
@@ -317,23 +330,24 @@ class Gu_Widget extends WP_Widget {
 	}
 
 	/** Build a query for the Guardian content API
-	 * (see http://explorer.content.guardianapis.com/)
-	 * Base our query on the given widget options.
-	 * Assumes that the widget options have already been validated.
-	 * @see Gu_Widget::update() for valid widget options
+
+		(see http://explorer.content.guardianapis.com/)
+		Base our query on the given $section, $order and $quantity.
+		Assumes that these options have already been validated.
+		@see Gu_Widget::update() for valid options
 	 */
-	private function build_query($widget_options) {
+	private function build_query($section, $order, $quantity) {
 		$query = array (
 			'format'      => 'json',
 			'show-fields' => 'thumbnail,headline',
 			'order-by'    => 'newest',
-			'pageSize'    => $widget_options['quantity']
+			'pageSize'    => $quantity
 			);
 
-		if ( $widget_options['order'] == 'most-viewed' )
+		if ( $order == 'most-viewed' )
 			$query['show-most-viewed'] = 'true';
 
-		$base = $widget_options['section'] . '?';
+		$base = $section . '?';
 
 		$built_query = http_build_query($query, null, '&');
 

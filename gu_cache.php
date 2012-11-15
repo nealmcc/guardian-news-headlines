@@ -77,6 +77,7 @@ class Gu_Cache {
 
 	/** Store the given headlines */
 	public function store($section, $order, $quantity, $headlines) {
+		var_dump ($headlines);
 		//stub
 	}
 }
