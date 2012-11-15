@@ -39,7 +39,7 @@ $guardian_headlines = new Guardian_Headlines();
 /** Namespace wrapper */
 class Guardian_Headlines {
 	private $version = '0.5';
-	public $table;
+	private $table;
 
 	public function __construct() {
 
@@ -133,8 +133,8 @@ class Guardian_Headlines {
 		}
 	}
 
+	/** Create the table that will hold our cache. */
 	private function create_cache() {
-
 		$section_list = get_option('guardian_headlines_sections');
 		$section_enum = "'{$section_list[0]->id}'";
 		$count = count($section_list);
@@ -155,14 +155,23 @@ class Guardian_Headlines {
 		dbDelta($table_desc);
 	}
 
+	/** Remove the cache */
 	private function remove_cache() {
-		//stub
+		global $wpdb;
+
+		$wpdb->query("DROP TABLE {$this->table}");
 
 	}
 
+	/** What's the cache table id?
+		By keeping $this->table private, and requiring this function to get the value,
+		we prevent other plugins from messing with the value.  Very good for when we remove
+		the cache on plugin deactivation.
+	*/
+	public function cache_table() {
+		return $this->table;
+	}
 
 }
-
-
 
 ?>
