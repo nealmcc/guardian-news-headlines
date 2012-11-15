@@ -87,6 +87,7 @@ class Gu_Widget extends WP_Widget {
 			echo $before_title . $title . $after_title;
 		}
 
+		echo '<div class="gu_headlines_widget_inner">';
 		$headlines = $this->get_headlines($instance);
 
 		foreach ( $headlines as &$headline ) {
@@ -95,6 +96,7 @@ class Gu_Widget extends WP_Widget {
 			echo '</div>';
 		}
 		$this->show_logo($instance['logo']);
+		echo '</div>';
 
 		echo $after_widget;
 	}
