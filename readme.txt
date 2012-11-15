@@ -7,13 +7,13 @@ Stable Tag: 0.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Shows the latest headlines from a selectable news category in a sidebar widget. Headlines link to the live article on The Guardian.
+Shows the latest headlines from a selectable news category in a sidebar widget. Headlines link to the live article on the Guardian.
 
 == Description ==
 
-The Guardian News Headlines plugin allows you to add live headlines and thumbnails from The Guardian to a sidebar on your site.  The text is indexable by search engines, and relevant to a category of your choice.  Have a blog about education? Pick that news category to add relevant content to your blog.
+The Guardian News Headlines plugin allows you to add live headlines and thumbnails from the Guardian to a sidebar on your site. The text is indexable by search engines, and relevant to a category of your choice. Have a blog about education? Pick that news category to add relevant content to your blog.
 
-Display Options:
+Display options:
 *	Selectable news category per widget
 *	Number of headlines per widget
 *	Choose between most recent and most viewed articles
@@ -21,10 +21,10 @@ Display Options:
 == Installation ==
 
 1.	Install the plugin from the Plugins page on your WordPress dashboard.
-1.	Activate The Guardian News Headlines plugin.
+1.	Activate the Guardian News Headlines plugin.
 1.	Add one or more Guardian News Headline widgets to the sidebar of your choice.
 
-== Frequently Asked Questions ==
+== Frequently asked questions ==
 
 = Can I have more than one headline widget? =
 
@@ -34,28 +34,28 @@ Yes, you can have as many widgets as you like. Each widget is specific to a news
 
 Yes. By picking a news category relevant to your blog's topic, you can add some relevant and up-to-date content to your site.
 
-= How often to the headlines update? =
+= How often do the headlines update? =
 
-This plugin fetches the headlines from The Guardian's Open Platform Content API.  It then caches the headlines for five minutes.  When that five minutes is up, the next time someone visits your site the plugin will again retrieve fresh data.
+This plugin fetches the headlines from the Guardian's Open Platform Content API. It then caches the headlines for five minutes. When that five minutes is up, the next time someone visits your site the plugin will again retrieve fresh data.
 
-So, when a new article is published on The Guardian website in your category, all your visitors will see that headline within five minutes.  (Assuming you've chosen the 'latest' feed.)
+So, when a new article is published on the Guardian website in your category, all your visitors will see that headline within five minutes. (Assuming you've chosen the 'latest' feed.)
 
 = Does the widget 'fit' with the visual look of my site? =
 
-The widget inherits your theme's style. It uses css for positioning and thumbnail size only - all other style elements, including font, text size and colour, line-spacing etc.. are set by your theme.  The plugin also gives four options for The Guardian's logo to fit with any background.
+The widget inherits your theme's style. It uses css for positioning and thumbnail size only - all other style elements, including font, text size and colour etc. are set by your theme.  The plugin also gives four options for the Guardian's logo to fit with any background.
 
 = What about article data? Can I get whole article contents on my blog? =
 
-If you would like to pull in full article data to your site, check out [The Guardian News Feed](http://wordpress.org/extend/plugins/the-guardian-news-feed/).
+If you would like to pull in full article data to your site, check out [the Guardian News Feed](http://wordpress.org/extend/plugins/the-guardian-news-feed/).
 
 == Screenshots ==
 
-1.	The Widget settings panel.
-1.	Available News Categories.
-1.	The Resulting Widget.
-1.	Changing to Most-Viewed.
-1.	Different Feed results for most-viewed articles.
-1.	The widget on a dark background.
+1.	The widget settings panel
+2.	Available news categories
+3.	The resulting widget
+4.	Changing to most-viewed
+5.	Different feed results for most-viewed articles
+6.	The widget on a dark background
 
 == Changelog ==
 
