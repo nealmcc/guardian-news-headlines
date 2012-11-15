@@ -70,15 +70,38 @@ class Gu_Cache {
 		Otherwise, we return an array of Gu_Headlines.
 	*/
 	public function headlines($section, $order, $quantity) {
-		//stub
+		global $wpdb;;
+
+		//$result = $wpdb-
 
 		return false;
 	}
 
-	/** Store the given headlines */
+	/** Store the given headlines
+
+		If the given combination of $section, $order, and $quantity are already
+		cached, we update their headlines and timestamp.
+	 */
 	public function store($section, $order, $quantity, $headlines) {
-		var_dump ($headlines);
-		//stub
+		global $wpdb;
+
+		$store_me = base64_encode(serialize($headlines));
+
+		$wpdb->query($wpdb->prepare(
+				"
+					INSERT INTO {$this->table}
+					(section, type, quantity, headlines )
+					VALUES ( %s, %s, %d, %s )
+					ON DUPLICATE KEY UPDATE headlines=VALUES(headlines)
+				",
+				array (
+					$section,
+					$order,
+					$quantity,
+					$store_me
+					)
+			));  // note that the timestamp column is set automatically by mysql
+
 	}
 }
 
