@@ -42,6 +42,10 @@ class Guardian_Headlines {
 	public $table;
 
 	public function __construct() {
+
+		global $wpdb;
+		$this->table = $wpdb->prefix . 'guardian_headlines';
+
 		register_activation_hook(__FILE__, array(&$this, 'install') );
 		register_deactivation_hook( __FILE__, array(&$this, 'uninstall') );
 
@@ -62,6 +66,8 @@ class Guardian_Headlines {
 
 		update_option('guardian_headlines_version', $this->version);
 		update_option('guardian_headlines_sections', $section_list);
+
+		$this->create_cache();
 	}
 
 	/** Clean up behind ourselves.
@@ -71,6 +77,8 @@ class Guardian_Headlines {
 		delete_option('guardian_headlines_version');
 		delete_option('guardian_headlines_sections');
 		delete_option('guardian_headlines_notified');
+
+		$this->remove_cache();
 	}
 
 	/**
@@ -81,6 +89,7 @@ class Guardian_Headlines {
 	 */
 	public function update_check() {
 		if (get_option("guardian_headlines_version") != $this->version) {
+			$this->remove_cache();
 			$this->install();
 		}
 	}
@@ -123,6 +132,35 @@ class Guardian_Headlines {
 			update_option('guardian_headlines_notified', 'true');
 		}
 	}
+
+	private function create_cache() {
+
+		$section_list = get_option('guardian_headlines_sections');
+		$section_enum = "'{$section_list[0]->id}'";
+		$count = count($section_list);
+		for ( $i = 1; $i < $count; $i++ ) {
+			$section_enum .= ", '{$section_list[$i]->id}'";
+		}
+
+		$table_desc = "CREATE TABLE " . $this->table . " (
+				section ENUM(" . $section_enum . ") NOT NULL,
+				type ENUM('latest', 'most-viewed') NOT NULL,
+				quantity TINYINT UNSIGNED NOT NULL,
+				headlines BLOB,
+				timestamp TIMESTAMP,
+				PRIMARY KEY (section, type, quantity)
+				);";
+
+		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+		dbDelta($table_desc);
+	}
+
+	private function remove_cache() {
+		//stub
+
+	}
+
+
 }
 
 
