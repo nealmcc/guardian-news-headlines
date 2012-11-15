@@ -12,6 +12,7 @@
 
 .widget_guardian_headlines_widget .gu_headline img {
 	float: left;
+	clear: none;
 	max-width: 35%;
 	margin: 0;
 	padding: 0;
@@ -20,6 +21,7 @@
 
 .widget_guardian_headlines_widget .gu_headline p {
 	float: right;
+	clear: none;
 	width: 60%;
 	margin: -2px 0 0 0;
 	padding: 0;
