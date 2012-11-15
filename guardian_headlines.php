@@ -33,18 +33,18 @@ if ( !function_exists( 'add_action' ) ) {
 
 define( 'GUARDIAN_HEADLINES_PATH', plugin_dir_path(__FILE__) );
 require_once ( GUARDIAN_HEADLINES_PATH . 'gu_widget.php' );
+require_once ( GUARDIAN_HEADLINES_PATH . 'gu_cache.php' );
 
 $guardian_headlines = new Guardian_Headlines();
 
 /** Namespace wrapper */
 class Guardian_Headlines {
 	private $version = '0.5';
-	private $table;
+	public $cache;
 
 	public function __construct() {
 
-		global $wpdb;
-		$this->table = $wpdb->prefix . 'guardian_headlines';
+		$this->cache = new Gu_Cache('guardian_headlines');
 
 		register_activation_hook(__FILE__, array(&$this, 'install') );
 		register_deactivation_hook( __FILE__, array(&$this, 'uninstall') );
@@ -67,7 +67,7 @@ class Guardian_Headlines {
 		update_option('guardian_headlines_version', $this->version);
 		update_option('guardian_headlines_sections', $section_list);
 
-		$this->create_cache();
+		$this->cache->create();
 	}
 
 	/** Clean up behind ourselves.
@@ -78,7 +78,7 @@ class Guardian_Headlines {
 		delete_option('guardian_headlines_sections');
 		delete_option('guardian_headlines_notified');
 
-		$this->remove_cache();
+		$this->cache->remove();
 	}
 
 	/**
@@ -89,7 +89,7 @@ class Guardian_Headlines {
 	 */
 	public function update_check() {
 		if (get_option("guardian_headlines_version") != $this->version) {
-			$this->remove_cache();
+			$this->cache->remove();
 			$this->install();
 		}
 	}
@@ -131,45 +131,6 @@ class Guardian_Headlines {
 
 			update_option('guardian_headlines_notified', 'true');
 		}
-	}
-
-	/** Create the table that will hold our cache. */
-	private function create_cache() {
-		$section_list = get_option('guardian_headlines_sections');
-		$section_enum = "'{$section_list[0]->id}'";
-		$count = count($section_list);
-		for ( $i = 1; $i < $count; $i++ ) {
-			$section_enum .= ", '{$section_list[$i]->id}'";
-		}
-
-		$table_desc = "CREATE TABLE " . $this->table . " (
-				section ENUM(" . $section_enum . ") NOT NULL,
-				type ENUM('latest', 'most-viewed') NOT NULL,
-				quantity TINYINT UNSIGNED NOT NULL,
-				headlines BLOB,
-				timestamp TIMESTAMP,
-				PRIMARY KEY (section, type, quantity)
-				);";
-
-		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-		dbDelta($table_desc);
-	}
-
-	/** Remove the cache */
-	private function remove_cache() {
-		global $wpdb;
-
-		$wpdb->query("DROP TABLE {$this->table}");
-
-	}
-
-	/** What's the cache table id?
-		By keeping $this->table private, and requiring this function to get the value,
-		we prevent other plugins from messing with the value.  Very good for when we remove
-		the cache on plugin deactivation.
-	*/
-	public function cache_table() {
-		return $this->table;
 	}
 
 }

@@ -1,6 +1,6 @@
 <?php
 /*
- * Class Name: Guardian Widget
+ * Class Name: Gu_Widget
  * Description: Object for each widget on a site.
  * Author: Neal McConachie for Guardian News Media
  * Author URI: http://www.riveroak.co/
