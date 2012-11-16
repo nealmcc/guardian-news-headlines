@@ -68,5 +68,8 @@ If you would like to pull in full article data to your site, check out [the Guar
 
 == Upgrade Notice ==
 
+= 0.5 =
+Caching enabled.  Speeds up page load times, and reduces load on the Guardian content API.
+
 = 0.4 =
 This version gets it all started. Check it out!
