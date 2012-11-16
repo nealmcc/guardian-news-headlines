@@ -1,54 +1,69 @@
-=== Guardian News ===
+=== Guardian News Headlines ===
 Contributors: nealmcconachie, openplatform
 Tags: Guardian, News, Headlines, News Headlines, widget
 Stable: 0.4
 Requires at least: 3.3
 Tested up to: 3.4.2
+Stable Tag: 0.4
+License: GPLv2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Display feeds of Guardian news headlines into customizable widgets.
+Shows the latest headlines from a selectable news category in a sidebar widget. Headlines link to the live article on the Guardian.
 
 == Description ==
 
-Add current events headlines from the category of your choice into any widgetised area of your Wordpress site.  Each headline links to the live article on The Guardian.
+The Guardian News Headlines plugin allows you to add live headlines and thumbnails from the Guardian to a sidebar on your site. The text is indexable by search engines, and relevant to a category of your choice. Have a blog about education? Pick that news category to add relevant content to your blog.
 
-Display Options:
-	- Selectable news categories
-	- Choose number of headlines per news section
-	- Choose between most recent and most viewed articles
+Display options:
+*	Selectable news category per widget
+*	Number of headlines per widget
+*	Choose between most recent and most viewed articles
 
 == Installation ==
 
-1. Upload the ‘guardian-news’ directory to the ‘/wp-content/plugins/’ directory
-2. Activate the plugin through the ‘plugins’ menu in WordPress
-3. Add a widget for each news category
+1.	Install the plugin from the Plugins page on your WordPress dashboard.
+1.	Activate the Guardian News Headlines plugin.
+1.	Add one or more Guardian News Headline widgets to the sidebar of your choice.
 
-== Frequently Asked Questions ==
+== Frequently asked questions ==
 
-= Foo =
+= Can I have more than one headline widget? =
 
-No.
+Yes, you can have as many widgets as you like. Each widget is specific to a news category.
 
-= Bar =
+= Are the news headlines visible to search engines? =
 
-Yes.
+Yes. By picking a news category relevant to your blog's topic, you can add some relevant and up-to-date content to your site.
 
-= How up to date? =
+= How often do the headlines update? =
 
-= What about article data? =
+This plugin fetches the headlines from the Guardian's Open Platform Content API. It then caches the headlines for five minutes. When that five minutes is up, the next time someone visits your site the plugin will again retrieve fresh data.
 
+So, when a new article is published on the Guardian website in your category, all your visitors will see that headline within five minutes. (Assuming you've chosen the 'latest' feed.)
+
+= Does the widget 'fit' with the visual look of my site? =
+
+The widget inherits your theme's style. It uses css for positioning and thumbnail size only - all other style elements, including font, text size and colour etc. are set by your theme.  The plugin also gives four options for the Guardian's logo to fit with any background.
+
+= What about article data? Can I get whole article contents on my blog? =
+
+If you would like to pull in full article data to your site, check out [the Guardian News Feed](http://wordpress.org/extend/plugins/the-guardian-news-feed/).
 
 == Screenshots ==
 
-1. This screen shot description corresponds to screenshot-1.(png|jpg|jpeg|gif). Note that the screenshot is taken from
-the directory of the stable readme.txt, so in this case, `/tags/4.3/screenshot-1.png` (or jpg, jpeg, gif)
-2. This is the second screen shot
+1.	The widget settings panel
+2.	Available news categories
+3.	The resulting widget
+4.	Changing to most-viewed
+5.	Different feed results for most-viewed articles
+6.	The widget on a dark background
 
 == Changelog ==
 
-= 0.1 =
-* Initial design
+= 0.4 =
+*	Alpha release, with a fully functional plugin, but no caching yet.
 
 == Upgrade Notice ==
 
-= 0.1 =
+= 0.4 =
 This version gets it all started. Check it out!
