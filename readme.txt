@@ -1,10 +1,9 @@
 === Guardian News Headlines ===
 Contributors: nealmcconachie, openplatform
 Tags: Guardian, News, Headlines, News Headlines, widget
-Stable: 0.5
 Requires at least: 3.3
 Tested up to: 3.4.2
-Stable Tag: 0.4
+Stable Tag: 0.5.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -60,6 +59,9 @@ If you would like to pull in full article data to your site, check out [the Guar
 
 == Changelog ==
 
+= 0.5.1 =
+*	Bug Fix release.
+
 = 0.5 =
 *	Add cache for headline data.
 
@@ -67,6 +69,9 @@ If you would like to pull in full article data to your site, check out [the Guar
 *	Alpha release, with a fully functional plugin, but no caching yet.
 
 == Upgrade Notice ==
+
+= 0.5.1 =
+Fix a bug with the caching.  The cache timestamp will now update appropriately even if the fresh data is the same as the old.
 
 = 0.5 =
 Caching enabled.  Speeds up page load times, and reduces load on the Guardian content API.

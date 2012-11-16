@@ -2,7 +2,7 @@
 /*
  * Plugin Name: Guardian News Headlines
  * Plugin URI: http://www.guardian.co.uk/open-platform
- * Version: 0.5
+ * Version: 0.5.1
  * Description: Displays a feed of Guardian news headlines into a widget. Each headline links to the live news article.
  * Author: Neal McConachie for Guardian News Media
  * Author URI: http://www.riveroak.co/
@@ -39,7 +39,7 @@ $guardian_headlines = new Guardian_Headlines();
 
 /** Namespace wrapper */
 class Guardian_Headlines {
-	private $version = '0.5';
+	private $version = '0.5.1';
 	public $cache;
 
 	public function __construct() {

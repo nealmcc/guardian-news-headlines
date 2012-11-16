@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class Gu_Cache {
 
 	private $table;
-	private $fresh_seconds = 300;
+	private $cache_time = '0:5:0'; // h:m:s
 
 	public function __construct($table) {
 		global $wpdb;
@@ -75,21 +75,21 @@ class Gu_Cache {
 					$wpdb->prepare(
 						"
 							SELECT headlines FROM {$this->table}
-							WHERE section = '%s'
-							AND type = '%s'
-							AND quantity = '%s'
-							AND timestamp >= SUBTIME(NOW(), %d);
+							WHERE section = %s
+							AND type = %s
+							AND quantity = %s
+							AND timestamp >= SUBTIME(NOW(), %s);
 						",
 						array(
 							$section,
 							$order,
 							$quantity,
-							$this->fresh_seconds
+							$this->cache_time
 							)
-						)
-						,0,0);
+						),
+					0,0);
 
-		$headlines = ( $result === false ) ? array() : unserialize(base64_decode($result));
+		$headlines = ( empty($result) ) ? false : unserialize(base64_decode($result));
 
 		return $headlines;
 	}
@@ -104,12 +104,14 @@ class Gu_Cache {
 
 		$store_me = base64_encode(serialize($headlines));
 
-		$wpdb->query($wpdb->prepare(
-				"
+		$query = $wpdb->prepare(
+			"
 					INSERT INTO {$this->table}
 					(section, type, quantity, headlines )
 					VALUES ( %s, %s, %d, %s )
-					ON DUPLICATE KEY UPDATE headlines=VALUES(headlines)
+					ON DUPLICATE KEY UPDATE
+					headlines = VALUES(headlines),
+					timestamp = NOW();
 				",
 				array (
 					$section,
@@ -117,7 +119,9 @@ class Gu_Cache {
 					$quantity,
 					$store_me
 					)
-			));  // note that the timestamp column is set automatically by mysql
+			);
+
+		$wpdb->query($query);
 
 	}
 }
