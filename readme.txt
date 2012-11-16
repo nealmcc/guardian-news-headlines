@@ -1,7 +1,7 @@
 === Guardian News Headlines ===
 Contributors: nealmcconachie, openplatform
 Tags: Guardian, News, Headlines, News Headlines, widget
-Stable: 0.4
+Stable: 0.5
 Requires at least: 3.3
 Tested up to: 3.4.2
 Stable Tag: 0.4
@@ -59,6 +59,9 @@ If you would like to pull in full article data to your site, check out [the Guar
 6.	The widget on a dark background
 
 == Changelog ==
+
+= 0.5 =
+*	Add cache for headline data.
 
 = 0.4 =
 *	Alpha release, with a fully functional plugin, but no caching yet.
