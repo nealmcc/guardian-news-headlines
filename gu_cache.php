@@ -27,12 +27,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class Gu_Cache {
 
 	private $table;
-	private $fresh_seconds;
+	private $fresh_seconds = 300;
 
-	public function __construct($table, $fresh = 300) {
+	public function __construct($table) {
 		global $wpdb;
 		$this->table = $wpdb->prefix . $table;
-		$this->fresh_seconds = $fresh;
 	}
 
 	/** Create the table that will hold our cache. */
@@ -70,11 +69,29 @@ class Gu_Cache {
 		Otherwise, we return an array of Gu_Headlines.
 	*/
 	public function headlines($section, $order, $quantity) {
-		global $wpdb;;
+		global $wpdb;
 
-		//$result = $wpdb-
+		$result = $wpdb->get_var(
+					$wpdb->prepare(
+						"
+							SELECT headlines FROM {$this->table}
+							WHERE section = '%s'
+							AND type = '%s'
+							AND quantity = '%s'
+							AND timestamp >= SUBTIME(NOW(), %d);
+						",
+						array(
+							$section,
+							$order,
+							$quantity,
+							$this->fresh_seconds
+							)
+						)
+						,0,0);
 
-		return false;
+		$headlines = ( $result === false ) ? array() : unserialize(base64_decode($result));
+
+		return $headlines;
 	}
 
 	/** Store the given headlines
