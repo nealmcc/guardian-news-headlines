@@ -44,8 +44,8 @@ class Gu_Widget extends WP_Widget {
 
 		$this->default_config = array(
 			'title'     => 'Latest from The Guardian',
-			'section'   => 'commentisfree',
-			'order'     => 'latest',
+			'section'   => 'index',
+			'order'     => 'most-viewed',
 			'quantity'  => 5,
 			'logo'      => 'normal'
 			);
