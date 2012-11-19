@@ -1,5 +1,5 @@
 === Guardian News Headlines ===
-Contributors: nealmcconachie, openplatform
+Contributors: NealMcConachie, openplatform
 Tags: Guardian, News, Headlines, News Headlines, widget
 Requires at least: 3.3
 Tested up to: 3.4.2
