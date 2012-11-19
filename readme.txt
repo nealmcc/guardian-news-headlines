@@ -3,7 +3,7 @@ Contributors: NealMcConachie, openplatform
 Tags: Guardian, News, Headlines, News Headlines, widget
 Requires at least: 3.3
 Tested up to: 3.4.2
-Stable Tag: 0.5.1
+Stable Tag: 0.5.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -60,6 +60,11 @@ If you would like to pull in full article data to your site, check out [the Guar
 
 == Changelog ==
 
+= 0.5.2 =
+*	Correctly validate widget options for the 'All' category
+*	Make the 'All' category default
+*	Rename "UK" and "World" to "UK News" and "World News"
+
 = 0.5.1 =
 *	Bug Fix release.
 
@@ -70,6 +75,9 @@ If you would like to pull in full article data to your site, check out [the Guar
 *	Alpha release, with a fully functional plugin, but no caching yet.
 
 == Upgrade Notice ==
+
+= 0.5.2 =
+Fixes a widget validation bug with the "All" category.
 
 = 0.5.1 =
 Fix a bug with the caching.  The cache timestamp will now update appropriately even if the fresh data is the same as the old.
