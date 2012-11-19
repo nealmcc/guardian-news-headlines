@@ -14,6 +14,7 @@ Shows the latest headlines from a selectable news category in a sidebar widget. 
 The Guardian News Headlines plugin allows you to add live headlines and thumbnails from the Guardian to a sidebar on your site. The text is indexable by search engines, and relevant to a category of your choice. Have a blog about education? Pick that news category to add relevant content to your blog.
 
 Display options:
+
 *	Selectable news category per widget
 *	Number of headlines per widget
 *	Choose between most recent and most viewed articles
