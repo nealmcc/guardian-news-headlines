@@ -1,7 +1,7 @@
 [
     {"id": "index",                "webTitle": "All"},
-    {"id": "uk",                   "webTitle": "UK"},
-    {"id": "world",                "webTitle": "World"},
+    {"id": "uk",                   "webTitle": "UK News"},
+    {"id": "world",                "webTitle": "World News"},
     {"id": "artanddesign",         "webTitle": "Art &amp; design"},
     {"id": "books",                "webTitle": "Books"},
     {"id": "business",             "webTitle": "Business"},
