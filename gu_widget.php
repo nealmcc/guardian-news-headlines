@@ -138,9 +138,12 @@ class Gu_Widget extends WP_Widget {
 		$save[$field] = ( in_array($new[$field], $allowed) ) ? $new[$field] : $this->default_config[$field];
 
 		$field = 'order';
-		$allowed = ( $save['section'] == 'index' ) ? array('most-viewed') : array('latest','most-viewed');
-		$save[$field] = ( in_array($new[$field], $allowed) ) ? $new[$field] : $this->default_config[$field];
-
+		if ( $save['section'] == 'index') {
+			$save[$field] = 'most-viewed';
+		} else {
+			$allowed = array('latest','most-viewed');
+			$save[$field] = ( in_array($new[$field], $allowed) ) ? $new[$field] : $this->default_config[$field];
+		}
 
 		$field = 'quantity';
 		if ( ! is_numeric($new[$field]) ) {
